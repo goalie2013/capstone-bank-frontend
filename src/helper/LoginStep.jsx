@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useContext } from "react";
 import { useQuery } from "@apollo/client";
 import { GET_USER_BY_EMAIL } from "../queries/userQueries";
 import { useNavigate } from "react-router-dom";
