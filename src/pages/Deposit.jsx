@@ -40,15 +40,15 @@ export default function Deposit({ token, userId, userEmail }) {
   // Fetch Data from Server using Auth Token
   const fetchData = async (token) => {
     console.log("fetchData token", token);
-    const result = await axios.get(
-      "https://betterbank.herokuapp.com/api/todos",
-      {
-        headers: {
-          Authorization: `Bearer + ${token}`,
-        },
-      }
-    );
-    console.log(result.data);
+    // const result = await axios.get(
+    //   "https://betterbank.herokuapp.com/api/todos",
+    //   {
+    //     headers: {
+    //       Authorization: `Bearer + ${token}`,
+    //     },
+    //   }
+    // );
+    // console.log(result.data);
   };
 
   // Check if userId matches url parameter; if NOT --> Not Authorized

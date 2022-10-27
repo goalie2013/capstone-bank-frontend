@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useQuery } from "@apollo/client";
 import { GET_USER_BY_EMAIL } from "../queries/userQueries";
 import { useNavigate } from "react-router-dom";
@@ -25,15 +25,19 @@ export default function LoginStep() {
     // pollInterval: 1000,
   });
 
-  onAuthStateChanged(firebaseAuth, (user) => {
-    console.log("firebase auth state changed");
-    if (user) {
-      token = user.accessToken;
-      window.localStorage.setItem("token", token);
-    } else {
-      navigate("/");
-    }
-  });
+  useEffect(() => {
+    onAuthStateChanged(firebaseAuth, (user) => {
+      console.log("firebase auth state changed");
+      console.log("user", user);
+      if (user) {
+        token = user.accessToken;
+        console.log("token", token);
+        window.localStorage.setItem("token", token);
+      } else {
+        navigate("/");
+      }
+    });
+  }, []);
 
   if (loading) console.error("LOADINGGGGG");
   //   if (error) return <DatabaseDown />;
