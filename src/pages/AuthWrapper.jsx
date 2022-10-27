@@ -13,6 +13,7 @@ import { GET_USER_BY_EMAIL } from "../queries/userQueries";
 import NotAuthorized from "../components/NotAuthorized";
 import UserData from "./UserData";
 import DatabaseDown from "../components/DatabaseDown";
+import PageNotFound from "../components/PageNotFound";
 
 export default function AuthWrapper({ pageComponent }) {
   console.log("----- AUTHWRAPPER ------");
@@ -111,10 +112,21 @@ export default function AuthWrapper({ pageComponent }) {
           );
       }
     }
+  } else {
+    //   return <DatabaseDown />;
+    const startTime = new Date();
+
+    endTime = new Date();
+    let timeDiff = endTime - startTime; //in ms
+    // strip the ms
+    timeDiff /= 1000;
+
+    // get seconds
+    const seconds = Math.round(timeDiff);
+    console.log(seconds + " seconds");
+
+    if (seconds > 8 && !data) return <PageNotFound />;
   }
-  // else {
-  //   return <DatabaseDown />;
-  // }
   return (
     <>
       {showModal ? (
