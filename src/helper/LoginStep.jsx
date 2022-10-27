@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { app } from "../firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useParams } from "react-router-dom";
+import { UserContext } from "../index";
 
 import NavBar from "../components/NavBar";
 import NotAuthorized from "../components/NotAuthorized";
@@ -15,6 +16,7 @@ export default function LoginStep() {
   console.log("---LOGINSTEP---");
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
+  const ctx = useContext(UserContext);
   const firebaseAuth = getAuth(app);
   const { email } = useParams();
   let id;
@@ -33,6 +35,7 @@ export default function LoginStep() {
         token = user.accessToken;
         console.log("token", token);
         window.localStorage.setItem("token", token);
+        ctx.user = { email: user.email };
       } else {
         navigate("/");
       }
@@ -45,6 +48,7 @@ export default function LoginStep() {
   if (data) {
     if (data.getUserByEmail) {
       console.log("data.getUserByEmail", data.getUserByEmail);
+      ctx.user.id = data.getUserByEmail;
       if (token && data.getUserByEmail.id) {
         console.log("navigate to Deposit..");
         navigate(`/deposit/${data.getUserByEmail.id}`);

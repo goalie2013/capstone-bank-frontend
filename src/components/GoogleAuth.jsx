@@ -32,18 +32,18 @@ export default function GoogleAuthCreateUser() {
     navigate(`/deposit/${id}`);
   }
 
-  const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
-  if (error) console.error("Apollo Error", error);
-  if (loading) console.log("LOADING");
-  if (data) {
-    console.log("DATA PRESENT!!", data);
-    if (!emailExists) {
-      ctx.user.email = userEmail;
-      navigate(`/deposit/${data.createUser.id}`);
-    }
-  } else {
-    console.log("NO DATA");
-  }
+  // const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
+  // if (error) console.error("Apollo Error", error);
+  // if (loading) console.log("LOADING");
+  // if (data) {
+  //   console.log("DATA PRESENT!!", data);
+  //   if (!emailExists) {
+  //     ctx.user.email = userEmail;
+  //     navigate(`/deposit/${data.createUser.id}`);
+  //   }
+  // } else {
+  //   console.log("NO DATA");
+  // }
 
   function handleGoogleAuth() {
     signInWithPopup(auth, provider)
@@ -57,14 +57,19 @@ export default function GoogleAuthCreateUser() {
         console.log("name", user.displayName);
         const name = user.displayName;
         const email = user.email;
-        setUserEmail(email);
-        try {
-          setTimeout(() => {
-            createUser({ variables: { user: { name, email } } }, 2000);
-          });
-        } catch (err) {
-          console.error("createUser Error", err.message);
-        }
+
+        ctx.user = { name, email };
+        navigate(`/login-success/${user.email}`);
+
+        // setUserEmail(email);
+
+        // try {
+        //   setTimeout(() => {
+        //     createUser({ variables: { user: { name, email } } }, 2000);
+        //   });
+        // } catch (err) {
+        //   console.error("createUser Error", err.message);
+        // }
       })
       .catch((error) => {
         // Handle Errors here.
