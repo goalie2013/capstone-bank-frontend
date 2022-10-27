@@ -89,6 +89,7 @@ export default function CreateAccount() {
 
     // Create User into Database
     try {
+      console.log("createUser()");
       createUser({ variables: { user: { name, email, password } } });
     } catch (err) {
       console.error("createUser Error", err.message);
