@@ -5,23 +5,25 @@ import NotAuthorized from "../components/NotAuthorized";
 export default function LoginStep({ user }) {
   const [showModal, setShowModal] = useState(false);
   const { email } = user;
-
-  if (!user.accessToken) return <NotAuthorized />;
+  let id;
 
   const { loading, error, data } = useQuery(GET_USER_BY_EMAIL, {
     variables: { email },
     // pollInterval: 1000,
   });
+
+  if (!user.accessToken) return <NotAuthorized />;
+
   if (loading) console.error("LOADINGGGGG");
   if (error) console.error("ERROR");
 
   if (data) {
-    if (data.getUserByEmail && data.getUserByEmail.id !== id) {
+    if (!data.getUserByEmail.id) {
       console.log("data.getUserByEmail.id", data.getUserByEmail.id);
-      return <NotAuthorized id={data.getUserByEmail.id} />;
+      return <NotAuthorized id={id} />;
     }
 
-    if (token && data.getUserByEmail) {
+    if (user.accessToken && data.getUserByEmail.id) {
       return (
         <Deposit
           token={token}
