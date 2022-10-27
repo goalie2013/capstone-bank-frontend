@@ -110,6 +110,8 @@ export default function AuthWrapper({ pageComponent }) {
           );
       }
     }
+  } else {
+    return <DatabaseDown />;
   }
   return (
     <>

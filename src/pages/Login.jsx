@@ -11,8 +11,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { app } from "../firebase";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import GoogleSignIn from "../components/GoogleSignIn";
-import { LOG_IN_USER } from "../mutations/userMutations";
-import { useMutation } from "@apollo/client";
+import LoginStep from "../helper/LoginStep";
 
 export default function Login() {
   const [show, setShow] = useState(true);
@@ -47,12 +46,6 @@ export default function Login() {
     color: passTxtColor,
   };
 
-  // Firebase can check real password automatically so DONT need this
-  //   const [loginUser, { data, loading, error }] = useMutation(LOG_IN_USER);
-  //   if (loading) console.warn("LOADING");
-  //   if (error) console.error("Error LOG_IN_USER", error.message);
-  //   if (data) console.log("LOG_IN_USER data", data);
-
   function handleLogin() {
     console.log("handleLogin", name, email, password);
     // e.preventDefault();
@@ -68,6 +61,8 @@ export default function Login() {
         // User is now Logged In
         const user = userCredential.user;
         console.log("Logged In User", user);
+
+        <LoginStep user={user} />;
 
         setShow(false);
       })

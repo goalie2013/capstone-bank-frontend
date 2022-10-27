@@ -21,7 +21,7 @@ export default function DatabaseDown() {
         <img
           src={pic}
           className="img-fluid"
-          alt="Panda Cartoon Shrugging Confusingly"
+          alt="Sad Computer"
           style={{ width: "12rem", marginBottom: "1.5rem" }}
         />
         <h1 style={{ textAlign: "center" }}>
