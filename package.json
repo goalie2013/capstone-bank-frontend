@@ -1,7 +1,10 @@
 {
   "name": "capstone-bank",
   "version": "0.1.0",
+  "description": "Project Title: Capstone Bannk: I created this project as a learning experience for understanding how to create a full-stack MERN application.",
   "private": true,
+  "author": "gabgrin",
+  "license": "MIT",
   "engines": {
     "node": "16.x",
     "npm": "8.15.0"
