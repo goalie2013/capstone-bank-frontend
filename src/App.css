@@ -49,6 +49,18 @@ body {
     margin-left: 0rem !important;
     width: 25%;
   }
+
+  .homeImgsWrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* justify-content: space-around; */
+    /* width: 100%; */
+    margin-top: "5rem";
+  }
+  .homeImg {
+    margin-top: "2rem";
+  }
 }
 
 @media all and (min-width: 656px) {
@@ -71,6 +83,15 @@ body {
     font-weight: 800;
     box-shadow: "0 0.2rem 0.75rem rgba(0, 0, 0, 0.3)";
     margin-left: "1rem";
+  }
+
+  .homeImgsWrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-around;
+    width: 100%;
+    margin-top: "5rem";
   }
 }
 

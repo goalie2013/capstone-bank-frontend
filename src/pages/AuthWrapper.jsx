@@ -19,7 +19,7 @@ export default function AuthWrapper({ pageComponent }) {
   const [auth, setAuth] = useState(
     window.localStorage.getItem("auth") === true || false
   );
-  const [credCounter, setCredCounter] = 0;
+  const [credCounter, setCredCounter] = useState(0);
   const [token, setToken] = useState("");
   const [email, setEmail] = useState("");
   let navigate = useNavigate();
@@ -68,7 +68,7 @@ export default function AuthWrapper({ pageComponent }) {
         // return <NotAuthorized id={id} />;
         setCredCounter((prevVal) => prevVal + 1);
 
-        if (counter > 10) setShowModal(true);
+        if (credCounter > 8) setShowModal(true);
       }
     });
   }, []);

@@ -58,10 +58,13 @@ export default function UserData({ token, userId, userEmail }) {
     }
   }
 
+  const nameLower = userName.toLowerCase();
+  const nameCapitalized = nameLower[0].toUpperCase() + nameLower.slice(1);
+
   return (
     <>
       <NavBar id={userId} />
-      {userName && (
+      {nameCapitalized && (
         <div className="page-wrapper">
           <h1
             style={{
@@ -73,7 +76,7 @@ export default function UserData({ token, userId, userEmail }) {
               fontWeight: 900,
             }}
           >
-            {userName} Transaction History
+            {nameCapitalized} Transaction History
           </h1>
           <h3 style={{ marginTop: "2rem" }}>
             <b>
