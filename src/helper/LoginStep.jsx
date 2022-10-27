@@ -26,6 +26,7 @@ export default function LoginStep() {
     variables: { email },
     // pollInterval: 1000,
   });
+  if (loading) console.warn("Loading", loading);
 
   useEffect(() => {
     onAuthStateChanged(firebaseAuth, (user) => {
