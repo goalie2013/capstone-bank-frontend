@@ -36,12 +36,13 @@ export default function LoginStep() {
   });
 
   if (loading) console.error("LOADINGGGGG");
-  if (error) return <DatabaseDown />;
+  //   if (error) return <DatabaseDown />;
 
   if (data) {
     if (data.getUserByEmail) {
       console.log("data.getUserByEmail", data.getUserByEmail);
       if (token && data.getUserByEmail.id) {
+        console.log("navigate to Deposit..");
         navigate(`/deposit/${data.getUserByEmail.id}`);
       } else if (!token) {
         console.log("NO TOKEN");
@@ -50,7 +51,6 @@ export default function LoginStep() {
     }
   } else {
     console.log("NO DATA");
-    setTimeout(() => navigate("/"), 8000);
   }
 
   return (
