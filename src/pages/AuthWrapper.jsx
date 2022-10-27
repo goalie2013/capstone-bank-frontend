@@ -68,7 +68,7 @@ export default function AuthWrapper({ pageComponent }) {
         // return <NotAuthorized id={id} />;
         setCredCounter((prevVal) => prevVal + 1);
 
-        if (counter > 5) setShowModal(true);
+        if (counter > 10) setShowModal(true);
       }
     });
   }, []);
