@@ -66,9 +66,10 @@ export default function AuthWrapper({ pageComponent }) {
         window.localStorage.setItem("token", "");
         console.log("FDSFSDFKFSDK", auth);
         // return <NotAuthorized id={id} />;
-        setCredCounter((prevVal) => prevVal + 1);
+        // setCredCounter((prevVal) => prevVal + 1);
 
-        if (credCounter > 8) setShowModal(true);
+        // if (credCounter > 8) setShowModal(true);
+        setShowModal(true);
       }
     });
   }, []);
