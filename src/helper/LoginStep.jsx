@@ -26,6 +26,7 @@ export default function LoginStep() {
   });
 
   onAuthStateChanged(firebaseAuth, (user) => {
+    console.log("firebase auth state changed");
     if (user) {
       token = user.accessToken;
       window.localStorage.setItem("token", token);
