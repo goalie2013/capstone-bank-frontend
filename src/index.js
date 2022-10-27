@@ -31,7 +31,7 @@ export const UserContext = React.createContext(null);
 // });
 
 const httpLink = new HttpLink({
-  uri: "https://betterbank.herokuapp.com:5050/graphql",
+  uri: "https://betterbank.herokuapp.com/graphql",
 });
 
 const errorLink = onError(({ graphQLErrors, networkError }) => {

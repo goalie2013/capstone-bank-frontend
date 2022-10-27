@@ -36,7 +36,7 @@ export default function Withdraw({ token, userId, userEmail }) {
   const fetchData = async (token) => {
     console.log("fetchData token", token);
     const result = await axios.get(
-      "https://betterbank.herokuapp.com:5050/api/todos",
+      "https://betterbank.herokuapp.com/api/todos",
       {
         headers: {
           Authorization: `Bearer + ${token}`,
