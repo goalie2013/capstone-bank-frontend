@@ -2,6 +2,9 @@ import React, { useState } from "react";
 import { useQuery } from "@apollo/client";
 import { GET_USER_BY_EMAIL } from "../queries/userQueries";
 import { useNavigate } from "react-router-dom";
+import { app } from "../firebase";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { useParams } from "react-router-dom";
 
 import NavBar from "../components/NavBar";
 import NotAuthorized from "../components/NotAuthorized";
@@ -12,40 +15,41 @@ export default function LoginStep() {
   console.log("---LOGINSTEP---");
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
+  const firebaseAuth = getAuth(app);
+  const { email } = useParams();
   let id;
-
-  const email = window.localStorage.getItem("email");
+  let token = window.localStorage.getItem("token") || "";
 
   const { loading, error, data } = useQuery(GET_USER_BY_EMAIL, {
     variables: { email },
     // pollInterval: 1000,
   });
 
-  const token = window.localStorage.getItem("token");
-  if (!token) {
-    console.log("NO TOKEN");
-    return <NotAuthorized />;
-  }
+  onAuthStateChanged(firebaseAuth, (user) => {
+    if (user) {
+      token = user.accessToken;
+      window.localStorage.setItem("token", token);
+    } else {
+      navigate("/");
+    }
+  });
 
   if (loading) console.error("LOADINGGGGG");
   if (error) return <DatabaseDown />;
 
   if (data) {
     if (data.getUserByEmail) {
+      console.log("data.getUserByEmail", data.getUserByEmail);
       if (token && data.getUserByEmail.id) {
-        window.localStorage.setItem("email", "");
-        return (
-          <Deposit
-            token={token}
-            userId={data.getUserByEmail.id}
-            userEmail={data.getUserByEmail.email}
-          />
-        );
+        navigate(`/deposit/${data.getUserByEmail.id}`);
+      } else if (!token) {
+        console.log("NO TOKEN");
+        return <NotAuthorized />;
       }
     }
   } else {
     console.log("NO DATA");
-    setTimeout(() => navigate("/"), 4000);
+    setTimeout(() => navigate("/"), 8000);
   }
 
   return (
@@ -55,7 +59,6 @@ export default function LoginStep() {
           <NotAuthorized id={id} />
         </>
       ) : (
-        // token && <X token={token} />
         //TODO:
         // <NotAuthorized />
         <>

@@ -61,12 +61,9 @@ export default function Login() {
         const user = userCredential.user;
         console.log("Logged In User", user);
 
-        window.localStorage.setItem("token", user.accessToken);
-        window.localStorage.setItem("email", user.email);
-
         navigate(`/login-success/${user.email}`);
 
-        setShow(false);
+        // setShow(false);
       })
       .catch((err) => {
         console.error("Error loggin in user", err.message);
