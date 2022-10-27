@@ -111,9 +111,10 @@ export default function AuthWrapper({ pageComponent }) {
           );
       }
     }
-  } else {
-    return <DatabaseDown />;
   }
+  // else {
+  //   return <DatabaseDown />;
+  // }
   return (
     <>
       {showModal ? (
