@@ -144,15 +144,15 @@ export default function AuthWrapper({ pageComponent }) {
         <>
           <NavBar id={id} />
           <div
-            class="d-flex justify-content-center align-items-center"
+            className="d-flex justify-content-center align-items-center"
             style={{ minHeight: "100vh" }}
           >
             <div
-              class="spinner-border text-primary"
+              className="spinner-border text-primary"
               style={{ width: "3rem", height: "3rem" }}
               role="status"
             >
-              <span class="sr-only"></span>
+              <span className="sr-only"></span>
             </div>
           </div>
         </>

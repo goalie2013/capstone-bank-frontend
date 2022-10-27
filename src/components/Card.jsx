@@ -77,7 +77,7 @@ export default function CustomCard(props) {
         {props.body}
         {props.statusText && (
           <div
-            class={classesAlert(props.statusColor)}
+            className={classesAlert(props.statusColor)}
             role="alert"
             style={{
               color: props.statusColor,

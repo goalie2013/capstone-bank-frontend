@@ -9,6 +9,7 @@ import AuthWrapper from "./pages/AuthWrapper";
 import PageNotFound from "./components/PageNotFound";
 import { UserContext } from "./index";
 import Login from "./pages/Login";
+import LoginStep from "./helper/LoginStep";
 
 // console.log(
 //   "process.env.REACT_APP_SERVER_PORT",
@@ -30,6 +31,7 @@ function App() {
               <Route path="/" element={<Home />} />
               <Route path="/createaccount" element={<CreateAccount />} />
               <Route path="/login" element={<Login />} />
+              <Route path="/login-success/:email" element={<LoginStep />} />
               <Route
                 path="/deposit/:id"
                 // element={<PageWrapper pageComponent={<Deposit />} />}
