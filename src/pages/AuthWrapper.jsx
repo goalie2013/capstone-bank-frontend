@@ -12,6 +12,7 @@ import { useQuery } from "@apollo/client";
 import { GET_USER_BY_EMAIL } from "../queries/userQueries";
 import NotAuthorized from "../components/NotAuthorized";
 import UserData from "./UserData";
+import DatabaseDown from "../components/DatabaseDown";
 
 export default function AuthWrapper({ pageComponent }) {
   console.log("----- AUTHWRAPPER ------");

@@ -1,6 +1,10 @@
 import React, { useState } from "react";
+import Deposit from "./Deposit";
 import DatabaseDown from "../components/DatabaseDown";
 import NotAuthorized from "../components/NotAuthorized";
+import { useQuery } from "@apollo/client";
+import { GET_USER_BY_EMAIL } from "../queries/userQueries";
+import NavBar from "../components/NavBar";
 
 export default function LoginStep({ user }) {
   const [showModal, setShowModal] = useState(false);
@@ -26,7 +30,7 @@ export default function LoginStep({ user }) {
     if (user.accessToken && data.getUserByEmail.id) {
       return (
         <Deposit
-          token={token}
+          token={user.accessToken}
           userId={data.getUserByEmail.id}
           userEmail={data.getUserByEmail.email}
         />
