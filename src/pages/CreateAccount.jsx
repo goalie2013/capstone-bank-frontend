@@ -7,6 +7,7 @@ import CustomCard from "../components/Card";
 import { UserContext } from "../index";
 // import validator from "validator";
 import { validate } from "../helper/userFormsHelper";
+import axios from "axios";
 import { COLORS } from "../themes";
 import { useMutation } from "@apollo/client";
 import { CREATE_USER } from "../mutations/userMutations";
@@ -32,12 +33,41 @@ export default function CreateAccount() {
   ctx.user.id ? (id = ctx.user.id) : (id = "bad-request");
 
   const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
-  if (error) console.error("Apollo Error", error);
+  if (error) {
+    console.error("Apollo Error", error);
+    alert(error.message);
+  }
   if (loading) console.log("LOADING");
   if (data && data.createUser) {
     console.log("DATA PRESENT!!", data);
-    ctx.user.id = data.createUser.id;
-    navigate(`/deposit/${data.createUser.id}`);
+    const newUser = data.createUser;
+
+    // Get & Store JWT Token
+    const userObj = {
+      id: newUser.id,
+      name: newUser.name,
+      email: newUser.email,
+    };
+
+    console.log("axios call", userObj);
+    axios
+      .post("http://localhost:5050/login", userObj)
+      .then((response) => {
+        console.log("axios response", response);
+        console.log("axios response", response.data.token);
+
+        // Reset context if user already created bc don't want id bug
+        ctx.user = {};
+        ctx.user = { ...userObj };
+
+        // Reset localStorage token in case not empty, then add new token
+        localStorage.setItem("token", "");
+        localStorage.setItem("token", response.data.token);
+      })
+      .then(() => {
+        navigate(`/deposit/${newUser.id}`);
+      })
+      .catch((err) => console.error("axios ERROR", err.message));
   } else {
     console.log("NO DATA");
   }
@@ -75,12 +105,6 @@ export default function CreateAccount() {
         // User is now Signed In
         const user = userCredential.user;
         console.log("Firebase User", user);
-        // Reset context if user already created
-        ctx.user = {};
-        ctx.user = {
-          name: name,
-          email: user.email,
-        };
       })
       .catch((error) => {
         console.error("Firebase Create User Error", error.message);

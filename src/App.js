@@ -10,6 +10,7 @@ import PageNotFound from "./components/PageNotFound";
 import { UserContext } from "./index";
 import Login from "./pages/Login";
 import LoginStep from "./helper/LoginStep";
+import AuthWrapperNew from "./pages/AuthWrapperNew";
 
 // console.log(
 //   "process.env.REACT_APP_SERVER_PORT",
@@ -35,7 +36,7 @@ function App() {
               <Route
                 path="/deposit/:id"
                 // element={<PageWrapper pageComponent={<Deposit />} />}
-                element={<AuthWrapper pageComponent="Deposit" />}
+                element={<AuthWrapperNew pageComponent="Deposit" />}
               />
               <Route
                 path="/withdraw/:id"

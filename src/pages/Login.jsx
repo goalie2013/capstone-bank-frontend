@@ -4,7 +4,6 @@ import SubmitBtn from "../components/SubmitBtn";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import CustomCard from "../components/Card";
-import { UserContext } from "../index";
 import { COLORS } from "../themes";
 import { validate } from "../helper/userFormsHelper";
 import { Link, useNavigate } from "react-router-dom";
@@ -22,10 +21,8 @@ export default function Login() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const ctx = useContext(UserContext);
   const navigate = useNavigate();
   let id;
-  ctx.user.id ? (id = ctx.user.id) : (id = "bad-request");
 
   let stateObj = { name, email, password };
   let setStateObj = {

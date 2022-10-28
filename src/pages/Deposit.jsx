@@ -18,7 +18,7 @@ import axios from "axios";
 // ** If grabbing value from onChange on each keychange, use ref OR e.target.value; NOT depositValue
 // ** setState won't update until next render, so messes up disabled/abled button
 
-export default function Deposit({ token, userId, userEmail }) {
+export default function Deposit({ userId, userEmail }) {
   console.log("----- DEPOSIT -----");
   // const ref = useRef(null);
   const [showSubmit, setShowSubmit] = useState(false);
@@ -32,24 +32,6 @@ export default function Deposit({ token, userId, userEmail }) {
   let balance, transactions;
 
   if (!ctx.user.id) ctx.user.id = userId;
-
-  useEffect(() => {
-    if (token) fetchData(token);
-  }, [token]);
-
-  // Fetch Data from Server using Auth Token
-  const fetchData = async (token) => {
-    console.log("fetchData token", token);
-    // const result = await axios.get(
-    //   "https://betterbank.herokuapp.com/api/todos",
-    //   {
-    //     headers: {
-    //       Authorization: `Bearer + ${token}`,
-    //     },
-    //   }
-    // );
-    // console.log(result.data);
-  };
 
   // Check if userId matches url parameter; if NOT --> Not Authorized
   console.log("USER ID", userId);

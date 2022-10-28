@@ -1,30 +1,31 @@
-import React, { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
 import { app } from "../firebase";
 import { getAuth } from "firebase/auth";
 import Deposit from "./Deposit";
 import Withdraw from "./Withdraw";
 import NavBar from "../components/NavBar";
-import { useParams } from "react-router-dom";
-import { useQuery } from "@apollo/client";
-import { GET_USER_BY_EMAIL } from "../queries/userQueries";
 import NotAuthorized from "../components/NotAuthorized";
 import UserData from "./UserData";
 import DatabaseDown from "../components/DatabaseDown";
 import PageNotFound from "../components/PageNotFound";
+import { UserContext } from "../index";
+import { useParams } from "react-router-dom";
+import { useQuery } from "@apollo/client";
+import { GET_USER_BY_EMAIL } from "../queries/userQueries";
+import axios from "axios";
 
-export default function AuthWrapper({ pageComponent }) {
-  console.log("----- AUTHWRAPPER ------");
+export default function AuthWrapperNew({ pageComponent }) {
+  console.log("----- AUTHWRAPPERNew ------");
   const [showModal, setShowModal] = useState(false);
-  const [auth, setAuth] = useState(
-    window.localStorage.getItem("auth") === true || false
-  );
-  const [token, setToken] = useState("");
+  const [showPage, setShowPage] = useState(false);
   const [email, setEmail] = useState("");
-  let navigate = useNavigate();
+  const [jwt, setJwt] = useState("");
   const firebaseAuth = getAuth(app);
   const { id } = useParams();
+  const ctx = useContext(UserContext);
+  const userId = ctx.user && ctx.user.id;
 
+  console.log("pageComponent", pageComponent);
   console.log("EMAIL", email);
 
   // GET USER BY EMAIL GRAPHQL QUERY
@@ -37,81 +38,84 @@ export default function AuthWrapper({ pageComponent }) {
 
   console.log("GET_USER_BY_EMAIL DATA", data);
 
-  // If userCred is null, means no user logged in w/ auth token -->
-  // Deny page entry &/or redirect to Create Account page
+  // Authorize user by sending JWT to Server & verifying
   useEffect(() => {
+    console.log("useEffect");
+    // Use firebaseAuth to get user's email, so can use it to query for user in DB
     firebaseAuth.onAuthStateChanged((userCred) => {
       if (userCred) {
-        console.log("userCred", userCred);
-        console.log("useEffect auth", auth);
-        console.log("EMAIL", userCred.email);
+        console.log("userCred EMAIL", userCred.email);
         setEmail(userCred.email);
 
-        setAuth(true);
-        window.localStorage.setItem("auth", "true");
+        // User authenticated; now need to authorize by passing JWT to Server to verify
+        const token = localStorage.getItem("token");
+        console.log("token from localStorage", token);
+        // if (token && token !== jwt) setJwt(token);
 
-        userCred.getIdToken().then((token) => {
-          console.log("useEffect token", token);
-          window.localStorage.setItem("token", token);
-          setToken(token);
-        });
+        axios
+          .post("http://localhost:5050/authorize", ctx.user, {
+            headers: {
+              "Authorization": `Bearer ${token}`,
+            },
+          })
+          .then((response) => {
+            console.log("axios response", response);
+            console.log("userId", userId);
+            if (userId) {
+              setShowPage(true);
+            } else {
+              setJwt(token);
+            }
+          })
+          .catch((err) => {
+            console.error("axios ERROR", err.message);
+            setShowModal(true);
+          });
       } else {
         console.warn("NO USER CREDENTIAL");
-        if (auth) {
-          console.log("running setAuth...");
-          setAuth(false);
-        }
-        console.log("auth after NO USER CRED", auth);
-        window.localStorage.setItem("auth", "false");
         window.localStorage.setItem("token", "");
-        console.log("FDSFSDFKFSDK", auth);
-        // return <NotAuthorized id={id} />;
-        // setCredCounter((prevVal) => prevVal + 1);
-
-        // if (credCounter > 8) setShowModal(true);
+        setJwt("");
         setShowModal(true);
       }
     });
   }, []);
 
-  console.log("pageComponent", pageComponent);
+  console.log("ctx.user & id", ctx.user, ctx.user.id);
+  if (ctx.user && ctx.user.id && ctx.user.id !== id) {
+    return <NotAuthorized id={ctx.user.id} />;
+  }
 
   if (data) {
-    if (data.getUserByEmail && data.getUserByEmail.id !== id) {
-      console.log("data.getUserByEmail.id", data.getUserByEmail.id);
-      return <NotAuthorized id={data.getUserByEmail.id} />;
+    const userData = data.getUserByEmail;
+    if (userData && userData.id !== id) {
+      console.log("userData.id", userData.id);
+      return <NotAuthorized id={userData.id} />;
     }
 
-    if (token && data.getUserByEmail) {
+    if ((jwt && userData) || showPage) {
       switch (pageComponent) {
         case "Deposit":
-          return (
-            <Deposit
-              token={token}
-              userId={data.getUserByEmail.id}
-              userEmail={data.getUserByEmail.email}
-            />
-          );
+          return <Deposit userId={userData.id} userEmail={userData.email} />;
         case "Withdraw":
           return (
             <Withdraw
-              token={token}
-              userId={data.getUserByEmail.id}
-              userEmail={data.getUserByEmail.email}
+              token={jwt}
+              userId={userData.id}
+              userEmail={userData.email}
             />
           );
         case "UserData":
           return (
             <UserData
-              token={token}
-              userId={data.getUserByEmail.id}
-              userEmail={data.getUserByEmail.email}
+              token={jwt}
+              userId={userData.id}
+              userEmail={userData.email}
             />
           );
       }
     }
   } else {
-    //   return <DatabaseDown />;
+    //TODO: What if data not found?
     const startTime = new Date();
 
     const endTime = new Date();
@@ -125,11 +129,23 @@ export default function AuthWrapper({ pageComponent }) {
 
     if (seconds > 8 && !data) return <PageNotFound />;
   }
+
+  // ** setState in global scope is BAD. rerender loop
+  //   if (showPage) {
+  //     switch (pageComponent) {
+  //       case "Deposit":
+  //         return <Deposit userId={userId} userEmail={email} />;
+  //       case "Withdraw":
+  //         return <Withdraw userId={id} userEmail={email} />;
+  //       case "UserData":
+  //         return <UserData userId={id} userEmail={email} />;
+  //     }
+  //   }
   return (
     <>
       {showModal ? (
         <>
-          {/* <NavBar />
+          {/*
           <div
             style={{
               display: "flex",
@@ -149,9 +165,6 @@ export default function AuthWrapper({ pageComponent }) {
           <NotAuthorized id={id} />
         </>
       ) : (
-        // token && <X token={token} />
-        //TODO:
-        // <NotAuthorized />
         <>
           <NavBar id={id} />
           <div

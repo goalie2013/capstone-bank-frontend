@@ -2,7 +2,6 @@ import React, { useState, useContext } from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
-import Login from "../pages/Login";
 import { Link } from "react-router-dom";
 import { app } from "../firebase";
 import { getAuth } from "firebase/auth";
@@ -42,6 +41,7 @@ export default function NavBar({ id }) {
     console.log("currentUser after", firebaseAuth.currentUser);
     setLoggedIn(false);
     ctx.user = {};
+    localStorage.setItem("token", "");
     navigate("/");
   }
 

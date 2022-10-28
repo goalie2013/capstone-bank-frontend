@@ -9,9 +9,9 @@ import { UserContext } from "../index";
 
 import NavBar from "../components/NavBar";
 import NotAuthorized from "../components/NotAuthorized";
-import Deposit from "../pages/Deposit";
-import DatabaseDown from "../components/DatabaseDown";
 
+// Need a LoginStep bc Query functions for GraphQL run right away, so create issues in Login component.
+// Also can retrieve id from DB for Google Login
 export default function LoginStep() {
   console.log("---LOGINSTEP---");
   const [showModal, setShowModal] = useState(false);
