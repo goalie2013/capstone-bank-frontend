@@ -23,7 +23,7 @@ export default function Home() {
   const [email, setEmail] = useState("");
 
   console.log("ctx", ctx);
-  ctx.user.id ? (id = ctx.user.id) : (id = "400");
+  ctx.user.id ? (id = ctx.user.id) : (id = "");
 
   console.log("loggedIn state", loggedIn);
   console.log("firebaseAuth.currentUser", firebaseAuth.currentUser);
@@ -32,9 +32,13 @@ export default function Home() {
     console.count("HOME useEffect");
     firebaseAuth.onAuthStateChanged((userCredential) => {
       console.log("HOME ONAUTHSTATECHANGED");
-      console.log(userCredential.email);
-      if (!email) setEmail(userCredential.email);
-      // setLoggedIn(true);
+      if (userCredential) {
+        console.log(userCredential.email);
+        if (!email) setEmail(userCredential.email);
+        // setLoggedIn(true);
+      } else {
+        id = "";
+      }
     });
     if (firebaseAuth.currentUser !== null) setLoggedIn(true);
   }, [email]);
