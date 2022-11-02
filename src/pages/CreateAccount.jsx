@@ -37,7 +37,7 @@ export default function CreateAccount() {
     console.error("Apollo Error", error);
     alert(error.message);
   }
-  if (loading) console.log("LOADING");
+  if (loading) return "Loading";
   if (data && data.createUser) {
     console.log("DATA PRESENT!!", data);
     const newUser = data.createUser;
