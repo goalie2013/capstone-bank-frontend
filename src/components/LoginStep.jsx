@@ -7,9 +7,9 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { useParams } from "react-router-dom";
 import { UserContext } from "../index";
 
-import NavBar from "../components/NavBar";
-import NotAuthorized from "../components/NotAuthorized";
-import { QueryGetUserByEmail } from "./queryMutationHelper";
+import NavBar from "./NavBar";
+import NotAuthorized from "./NotAuthorized";
+import { QueryGetUserByEmail } from "../helper/queryMutationHelper";
 import axios from "axios";
 
 // Need a LoginStep bc Query functions for GraphQL run right away, so create issues in Login component.
@@ -63,7 +63,7 @@ export default function LoginStep({ email, password }) {
       };
       console.log("axios call", userObj);
       axios
-        .post("http://localhost:5050/login", userObj)
+        .post("https://betterbank.herokuapp.com:5050/login", userObj)
         .then((response) => {
           console.log("axios response", response);
           console.log("axios response", response.data.token);

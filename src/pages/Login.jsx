@@ -10,7 +10,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { app } from "../firebase";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import GoogleSignIn from "../components/GoogleSignIn";
-import LoginStep from "../helper/LoginStep";
+import LoginStep from "../components/LoginStep";
 
 export default function Login() {
   const [show, setShow] = useState(true);

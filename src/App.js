@@ -9,7 +9,7 @@ import AuthWrapper from "./pages/AuthWrapper";
 import PageNotFound from "./components/PageNotFound";
 import { UserContext } from "./index";
 import Login from "./pages/Login";
-import LoginStep from "./helper/LoginStep";
+import LoginStep from "./components/LoginStep";
 import AuthWrapperNew from "./pages/AuthWrapperNew";
 import NavBar from "./components/NavBar";
 

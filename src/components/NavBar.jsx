@@ -29,11 +29,6 @@ export default function NavBar({ id }) {
   console.log("button txt", btnTxt);
   console.log("firebaseAuth.currentUser", firebaseAuth.currentUser);
 
-  // useEffect(() => {
-  //   console.count("NAVBAR useEffect");
-  //   if (firebaseAuth.currentUser !== null) setBtnTxt("Logout");
-  // }, [firebaseAuth.currentUser]);
-
   useEffect(() => {
     console.count("NAVBAR useEffect");
     firebaseAuth.onAuthStateChanged((userCredential) => {

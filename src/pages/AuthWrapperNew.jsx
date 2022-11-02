@@ -57,7 +57,7 @@ export default function AuthWrapperNew({ pageComponent }) {
     // if (token && token !== jwt) setJwt(token);
 
     axios
-      .post("http://localhost:5050/authorize", ctx.user, {
+      .post("https://betterbank.herokuapp.com:5050/authorize", ctx.user, {
         headers: {
           "Authorization": `Bearer ${token}`,
         },

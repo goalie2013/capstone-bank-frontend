@@ -51,7 +51,7 @@ export default function CreateAccount() {
 
     console.log("axios call", userObj);
     axios
-      .post("http://localhost:5050/login", userObj)
+      .post("https://betterbank.herokuapp.com:5050/login", userObj)
       .then((response) => {
         console.log("axios response", response);
         console.log("axios response", response.data.token);
