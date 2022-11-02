@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
@@ -13,15 +13,23 @@ import { UserContext } from "../index";
 
 export default function NavBar({ id }) {
   const ctx = useContext(UserContext);
-  const [expanded, setExpanded] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(
-    Object.keys(ctx.user).length === 0 ? false : true
-  );
   const firebaseAuth = getAuth(app);
+  const [expanded, setExpanded] = useState(false);
+  const [btnTxt, setBtnTxt] = useState(
+    firebaseAuth.currentUser ? "Logout" : "Log In"
+  );
   const navigate = useNavigate();
 
-  console.log("NAVBAR ID", id);
-  console.log("length", Object.keys(ctx.user).length, loggedIn);
+  // console.log("NAVBAR ID", id);
+  // console.log("loggedIn", loggedIn);
+  console.log("---NAVBAR---");
+  console.log("button txt", btnTxt);
+  console.log("firebaseAuth.currentUser", firebaseAuth.currentUser);
+
+  useEffect(() => {
+    console.count("NAVBAR useEffect");
+    if (firebaseAuth.currentUser !== null) setBtnTxt("Logout");
+  }, [firebaseAuth.currentUser]);
 
   const style = {
     backgroundColor: "#89abe3ff",
@@ -35,19 +43,19 @@ export default function NavBar({ id }) {
   }
 
   function logout() {
-    console.log("Logout");
+    console.log("Logout FUNCTION");
     console.log("currentUser before", firebaseAuth.currentUser);
     firebaseAuth.signOut();
     console.log("currentUser after", firebaseAuth.currentUser);
-    setLoggedIn(false);
+    // setLoggedIn(false);
+    setBtnTxt("Log In");
     ctx.user = {};
-    localStorage.setItem("token", "");
+    localStorage.removeItem("token");
     navigate("/");
   }
 
   return (
     <>
-      {/* <Router> */}
       <Navbar
         variant="light"
         expand="md"
@@ -57,7 +65,12 @@ export default function NavBar({ id }) {
       >
         <Container>
           <Navbar.Brand>
-            <Link to="/" style={style} onClick={() => setExpanded(false)}>
+            <Link
+              to="/"
+              style={style}
+              onClick={() => setExpanded(false)}
+              id={id}
+            >
               <span
                 style={{
                   display: "flex",
@@ -87,18 +100,23 @@ export default function NavBar({ id }) {
             className="justify-content-end"
           >
             <Nav>
-              <Nav.Item>
-                <Nav.Link>
-                  <Link
-                    to="/createaccount"
-                    style={style}
-                    className="link"
-                    onClick={() => setExpanded(false)}
-                  >
-                    Create Account
-                  </Link>
-                </Nav.Link>
-              </Nav.Item>
+              {btnTxt === "Log In" ? (
+                <Nav.Item>
+                  <Nav.Link>
+                    <Link
+                      to="/createaccount"
+                      style={style}
+                      className="link"
+                      onClick={() => setExpanded(false)}
+                    >
+                      Create Account
+                    </Link>
+                  </Nav.Link>
+                </Nav.Item>
+              ) : (
+                <></>
+              )}
+
               <Nav.Item>
                 <Nav.Link>
                   <Link
@@ -135,25 +153,6 @@ export default function NavBar({ id }) {
                   </Link>
                 </Nav.Link>
               </Nav.Item>
-              {/* <Nav.Item>
-                <Nav.Link>
-                  <Link
-                    to="/alldata"
-                    style={style}
-                    className="link"
-                    onClick={() => setExpanded(false)}
-                  >
-                    All Data
-                  </Link>
-                </Nav.Link>
-              </Nav.Item> */}
-              {/* <Nav.Item>
-                <Nav.Link>
-                  <Link to="/" style={style} className="link" onClick={logout}>
-                    Logout
-                  </Link>
-                </Nav.Link>
-              </Nav.Item> */}
               <Button
                 className="loginOutBtn"
                 style={{
@@ -164,33 +163,16 @@ export default function NavBar({ id }) {
                   marginLeft: "1rem",
                 }}
                 onClick={() => {
-                  !id || id === "bad-request" ? login() : logout();
+                  btnTxt === "Logout" ? logout() : login();
                   setExpanded(false);
                 }}
               >
-                {loggedIn ? "Logout" : "Log In"}
+                {btnTxt}
               </Button>
             </Nav>
           </Navbar.Collapse>
         </Container>
       </Navbar>
-      {/* <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/createaccount" element={<CreateAccount />} />
-            <Route
-              path="/deposit"
-              element={<PageWrapper pageComponent={<Deposit />} />}
-            />
-            <Route
-              path="/withdraw"
-              element={<PageWrapper pageComponent={<Withdraw />} />}
-            />
-            <Route
-              path="/data"
-              element={<PageWrapper pageComponent={<Data />} />}
-            />
-          </Routes> */}
-      {/* </Router> */}
     </>
   );
 }

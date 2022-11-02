@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useState, useContext } from "react";
 import NavBar from "../components/NavBar";
 import Transaction from "../components/Transaction";
 import CustomCard from "../components/Card";
@@ -8,28 +8,22 @@ import { QueryGetUser } from "../helper/queryMutationHelper";
 import { UserContext } from "../index";
 import PageNotFound from "../components/PageNotFound";
 import { MdOutlineAttachMoney } from "react-icons/md";
+import NotAuthorized from "../components/NotAuthorized";
 
 export default function UserData({ token, userId, userEmail }) {
-  let { id } = useParams();
+  const [showLoading, setShowLoading] = useState(false);
+  let { id: paramId } = useParams();
   let userName, balance, transactions, transactionsEl;
   const ctx = useContext(UserContext);
   console.log("ctx", ctx);
   if (!ctx.user.id) ctx.user.id = userId;
 
   try {
-    const { loading, queriedId, name, currentBalance, xTransactions } =
-      QueryGetUser(id);
+    const { loading, name, currentBalance, xTransactions } =
+      QueryGetUser(userId);
     console.log("loading", loading);
-    if (loading)
-      //TODO: Change to Spinner
-      return (
-        <>
-          <NavBar id={userId} />
-          <h1>LOADING!!!</h1>
-        </>
-      );
+    if (loading) setShowLoading(true);
 
-    id = queriedId;
     userName = name;
     balance = currentBalance;
     transactions = xTransactions;
@@ -40,8 +34,8 @@ export default function UserData({ token, userId, userEmail }) {
 
   // Check if userId matches url parameter; if NOT --> Not Authorized
   console.log("USER ID", userId);
-  console.log("PARAM ID", id);
-  if (userId !== id) return <PageNotFound id={userId} />;
+  console.log("PARAM ID", paramId);
+  if (userId !== paramId) return <NotAuthorized id={userId} />;
 
   console.log("transactions", transactions);
 
@@ -64,7 +58,7 @@ export default function UserData({ token, userId, userEmail }) {
   return (
     <>
       <NavBar id={userId} />
-      {nameCapitalized && (
+      {nameCapitalized ? (
         <div className="page-wrapper">
           <h1
             style={{
@@ -92,6 +86,19 @@ export default function UserData({ token, userId, userEmail }) {
             // header={`${userName} Transaction History`}
             body={<h4>{transactionsEl}</h4>}
           ></CustomCard>
+        </div>
+      ) : (
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ minHeight: "100vh" }}
+        >
+          <div
+            className="spinner-border text-primary"
+            style={{ width: "3rem", height: "3rem" }}
+            role="status"
+          >
+            <span className="sr-only"></span>
+          </div>
         </div>
       )}
     </>

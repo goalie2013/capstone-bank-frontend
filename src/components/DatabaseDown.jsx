@@ -3,6 +3,8 @@ import { Link } from "react-router-dom";
 import pic from "../assets/sad-laptop.png";
 
 export default function DatabaseDown() {
+  console.log("DatabaseDown");
+
   const styles = {
     display: "flex",
     minHeight: "85vh",

@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 import { COLORS } from "../themes";
 import { useParams } from "react-router-dom";
 import axios from "axios";
+import NotAuthorized from "../components/NotAuthorized";
 // ** If grabbing value from onChange on each keychange, use ref OR e.target.value; NOT depositValue
 // ** setState won't update until next render, so messes up disabled/abled button
 
@@ -25,27 +26,25 @@ export default function Deposit({ userId, userEmail }) {
   const [status, setStatus] = useState("");
   const [depositValue, setDepositValue] = useState("");
   const [textColor, setTextColor] = useState("");
-  const { id } = useParams();
+  const { id: paramId } = useParams();
   const ctx = useContext(UserContext);
   console.log("ctx", ctx);
 
   let balance, transactions;
 
-  if (!ctx.user.id) ctx.user.id = userId;
+  if (ctx.user && !ctx.user.id) ctx.user.id = userId;
 
   // Check if userId matches url parameter; if NOT --> Not Authorized
   console.log("USER ID", userId);
-  console.log("PARAM ID", id);
-  if (userId !== id) return <PageNotFound id={userId} />;
+  console.log("PARAM ID", paramId);
+  if (userId !== paramId) return <NotAuthorized id={userId} />;
 
-  // Update User Mutation
-  const updateUser = MutationUpdateUser(id, userEmail);
+  // Update User using GraphQL Mutation
+  const updateUser = MutationUpdateUser(userId, userEmail);
 
   // Get User Query: Retrieve Balance & Transactions
   try {
-    // ??
-    // QueryGetUserByEmail(userEmail);
-    let { queriedId, currentBalance, xTransactions } = QueryGetUser(id);
+    let { loading, currentBalance, xTransactions } = QueryGetUser(userId);
     // userId = queriedId;
     balance = currentBalance;
     transactions = xTransactions;
@@ -55,7 +54,7 @@ export default function Deposit({ userId, userEmail }) {
     if (err.message == "Data is null") {
       console.error("DATA IS NULL");
       // setShowPage(false);
-      return <PageNotFound id={id} />;
+      return <PageNotFound id={paramId} />;
     } else if (err.message == "Error getting User Data") {
       return (
         <h1 style={{ color: "red" }}>ERROR GETTING USER DATA: {err.message}</h1>
@@ -78,7 +77,9 @@ export default function Deposit({ userId, userEmail }) {
     ];
 
     try {
-      updateUser({ variables: { id, userData: { balance, transactions } } });
+      updateUser({
+        variables: { id: userId, userData: { balance, transactions } },
+      });
     } catch (err) {
       console.error("Deposit updateUser Error", err.message);
     }

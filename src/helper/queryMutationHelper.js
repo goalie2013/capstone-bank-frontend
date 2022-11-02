@@ -45,7 +45,25 @@ export function QueryGetUserByEmail(email) {
     // pollInterval: 1000,
   });
 
-  if (data) return data;
+  if (loading) {
+    console.log("--LOADING--");
+    // return <h1>LOADING...</h1>;
+    // throw new Error("Loading");
+    return { loading };
+  }
+
+  if (error) {
+    console.error("query Error:", error.message);
+    throw new Error("Error getting User Data");
+  }
+
+  // console.log("user data", data);
+  // if (!data || data.getUserByEmail == null) {
+  //   throw new Error("Data is null");
+  // }
+
+  const user = data.getUserByEmail;
+  return { user, loading };
 }
 
 export function QueryAllUsers() {

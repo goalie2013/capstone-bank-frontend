@@ -23,7 +23,7 @@ export default function AuthWrapper({ pageComponent }) {
   const [email, setEmail] = useState("");
   let navigate = useNavigate();
   const firebaseAuth = getAuth(app);
-  const { id } = useParams();
+  const { id: paramId } = useParams();
 
   console.log("EMAIL", email);
 
@@ -77,7 +77,7 @@ export default function AuthWrapper({ pageComponent }) {
   console.log("pageComponent", pageComponent);
 
   if (data) {
-    if (data.getUserByEmail && data.getUserByEmail.id !== id) {
+    if (data.getUserByEmail && data.getUserByEmail.id !== paramId) {
       console.log("data.getUserByEmail.id", data.getUserByEmail.id);
       return <NotAuthorized id={data.getUserByEmail.id} />;
     }
@@ -146,14 +146,14 @@ export default function AuthWrapper({ pageComponent }) {
 
             <div className="overlay"></div>
           </div> */}
-          <NotAuthorized id={id} />
+          <NotAuthorized id={paramId} />
         </>
       ) : (
         // token && <X token={token} />
         //TODO:
         // <NotAuthorized />
         <>
-          <NavBar id={id} />
+          <NavBar id={paramId} />
           <div
             className="d-flex justify-content-center align-items-center"
             style={{ minHeight: "100vh" }}

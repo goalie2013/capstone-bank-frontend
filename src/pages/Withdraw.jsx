@@ -5,6 +5,7 @@ import Form from "react-bootstrap/Form";
 import SubmitBtn from "../components/SubmitBtn";
 import { UserContext } from "../index";
 import PageNotFound from "../components/PageNotFound";
+import NotAuthorized from "../components/NotAuthorized";
 import { handleChange } from "../helper/handleHelper";
 import {
   QueryGetUser,
@@ -22,42 +23,41 @@ export default function Withdraw({ token, userId, userEmail }) {
   const [status, setStatus] = useState("");
   const [withdrawValue, setWithdrawValue] = useState("");
   const [textColor, setTextColor] = useState("");
-  const { id } = useParams();
+  const { id: paramId } = useParams();
   let balance, transactions;
   const ctx = useContext(UserContext);
   console.log("ctx", ctx);
 
-  if (!ctx.user.id) ctx.user.id = userId;
+  if (ctx.user && !ctx.user.id) ctx.user.id = userId;
 
-  useEffect(() => {
-    if (token) fetchData(token);
-  }, [token]);
+  // useEffect(() => {
+  //   if (token) fetchData(token);
+  // }, [token]);
 
-  const fetchData = async (token) => {
-    console.log("fetchData token", token);
-    const result = await axios.get(
-      "https://betterbank.herokuapp.com/api/todos",
-      {
-        headers: {
-          Authorization: `Bearer + ${token}`,
-        },
-      }
-    );
-    console.log(result.data);
-  };
+  // const fetchData = async (token) => {
+  //   console.log("fetchData token", token);
+  //   const result = await axios.get(
+  //     "https://betterbank.herokuapp.com/api/todos",
+  //     {
+  //       headers: {
+  //         Authorization: `Bearer + ${token}`,
+  //       },
+  //     }
+  //   );
+  //   console.log(result.data);
+  // };
 
   // Check if userId matches url parameter; if NOT --> Not Authorized
   console.log("USER ID", userId);
-  console.log("PARAM ID", id);
-  if (userId !== id) return <PageNotFound id={userId} />;
+  console.log("PARAM ID", paramId);
+  if (userId !== paramId) return <NotAuthorized id={userId} />;
 
   // Update User Mutation
-  const updateUser = MutationUpdateUser(id, userEmail);
+  const updateUser = MutationUpdateUser(userId, userEmail);
 
   // Get User Query
   try {
-    QueryGetUserByEmail(userEmail);
-    let { queriedId, currentBalance, xTransactions } = QueryGetUser(id);
+    let { queriedId, currentBalance, xTransactions } = QueryGetUser(userId);
     // userId = queriedId;
     balance = currentBalance;
     transactions = xTransactions;
@@ -67,7 +67,7 @@ export default function Withdraw({ token, userId, userEmail }) {
     if (err.message == "Data is null") {
       console.error("DATA IS NULL");
       // setShowPage(false);
-      return <PageNotFound id={id} />;
+      return <PageNotFound id={paramId} />;
     } else if (err.message == "Error getting User Data") {
       return (
         <h1 style={{ color: "red" }}>ERROR GETTING USER DATA: {err.message}</h1>
@@ -98,7 +98,9 @@ export default function Withdraw({ token, userId, userEmail }) {
     ];
 
     try {
-      updateUser({ variables: { id, userData: { balance, transactions } } });
+      updateUser({
+        variables: { id: userId, userData: { balance, transactions } },
+      });
     } catch (err) {
       console.error("Withdraw updateUser Error", err.message);
     }

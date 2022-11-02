@@ -35,6 +35,7 @@ export default function LoginStep() {
       if (user) {
         token = user.accessToken;
         console.log("token", token);
+        if (localStorage.getItem("token")) localStorage.removeItem("token");
         window.localStorage.setItem("token", token);
         ctx.user = { email: user.email };
       } else {
