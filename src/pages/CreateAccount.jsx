@@ -62,7 +62,8 @@ export default function CreateAccount() {
 
         // Reset localStorage token in case not empty, then add new token
         // localStorage.setItem("token", "");
-        if (localStorage.getItem("token")) localStorage.removeItem("token");
+        // if (localStorage.getItem("token") ) localStorage.removeItem("token");
+        localStorage.removeItem("token");
         localStorage.setItem("token", response.data.token);
       })
       .then(() => {

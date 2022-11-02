@@ -24,7 +24,7 @@ export default function AuthWrapperNew({ pageComponent }) {
   const firebaseAuth = getAuth(app);
   const { id: paramId } = useParams();
   const ctx = useContext(UserContext);
-  const userId = ctx.user && ctx.user.id;
+  let userId = ctx.user && ctx.user.id;
 
   console.count("----- AUTHWRAPPERNew ------");
   console.log("pageComponent", pageComponent);
@@ -115,28 +115,23 @@ export default function AuthWrapperNew({ pageComponent }) {
     console.log("DATA FOUND");
     console.log("jwt", jwt);
     // const userData = data.getUserByEmail;
+    userId = userData.id;
 
     // If user ID does NOT equal the parameter ID ==> Not Authorized
-    if (userData && userData.id !== paramId) {
-      console.log("userData.id", userData.id);
-      return <NotAuthorized id={userData.id} />;
+    if (userData && userId !== paramId) {
+      console.log("userData.id", userId);
+      return <NotAuthorized id={userId} />;
     }
 
     if ((jwt && userData) || showPage) {
       console.log("switching page...");
       switch (pageComponent) {
         case "Deposit":
-          return <Deposit userId={userData.id} userEmail={userData.email} />;
+          return <Deposit userId={userId} userEmail={userData.email} />;
         case "Withdraw":
-          return <Withdraw userId={userData.id} userEmail={userData.email} />;
+          return <Withdraw userId={userId} userEmail={userData.email} />;
         case "UserData":
-          return (
-            <UserData
-              token={jwt}
-              userId={userData.id}
-              userEmail={userData.email}
-            />
-          );
+          return <UserData userId={userId} userEmail={userData.email} />;
       }
     }
   } else {

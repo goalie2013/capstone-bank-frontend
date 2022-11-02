@@ -12,23 +12,44 @@ import { useNavigate } from "react-router-dom";
 import { UserContext } from "../index";
 
 export default function NavBar({ id }) {
+  const navigate = useNavigate();
   const ctx = useContext(UserContext);
   const firebaseAuth = getAuth(app);
   const [expanded, setExpanded] = useState(false);
+  const [loggedIn, setLoggedIn] = useState(
+    firebaseAuth.currentUser ? true : false
+  );
   const [btnTxt, setBtnTxt] = useState(
     firebaseAuth.currentUser ? "Logout" : "Log In"
   );
-  const navigate = useNavigate();
 
   // console.log("NAVBAR ID", id);
-  // console.log("loggedIn", loggedIn);
   console.log("---NAVBAR---");
+  console.log("loggedIn", loggedIn);
   console.log("button txt", btnTxt);
   console.log("firebaseAuth.currentUser", firebaseAuth.currentUser);
 
+  // useEffect(() => {
+  //   console.count("NAVBAR useEffect");
+  //   if (firebaseAuth.currentUser !== null) setBtnTxt("Logout");
+  // }, [firebaseAuth.currentUser]);
+
   useEffect(() => {
     console.count("NAVBAR useEffect");
-    if (firebaseAuth.currentUser !== null) setBtnTxt("Logout");
+    firebaseAuth.onAuthStateChanged((userCredential) => {
+      console.log("NAVBAR ONAUTHSTATECHANGED");
+      if (userCredential) {
+        console.log("userCredential.email", userCredential.email);
+        setLoggedIn(true);
+        setBtnTxt("Logout");
+      } else {
+        console.log("NAVBAR No User Credential");
+        id = "";
+        setLoggedIn(false);
+        setBtnTxt("Log In");
+      }
+    });
+    // if (firebaseAuth.currentUser !== null) setLoggedIn(true);
   }, [firebaseAuth.currentUser]);
 
   const style = {
@@ -48,7 +69,7 @@ export default function NavBar({ id }) {
     firebaseAuth.signOut();
     console.log("currentUser after", firebaseAuth.currentUser);
     // setLoggedIn(false);
-    setBtnTxt("Log In");
+    // setBtnTxt("Log In");
     ctx.user = {};
     localStorage.removeItem("token");
     navigate("/");
@@ -163,7 +184,7 @@ export default function NavBar({ id }) {
                   marginLeft: "1rem",
                 }}
                 onClick={() => {
-                  btnTxt === "Logout" ? logout() : login();
+                  loggedIn ? logout() : login();
                   setExpanded(false);
                 }}
               >

@@ -9,58 +9,102 @@ import { UserContext } from "../index";
 
 import NavBar from "../components/NavBar";
 import NotAuthorized from "../components/NotAuthorized";
+import { QueryGetUserByEmail } from "./queryMutationHelper";
+import axios from "axios";
 
 // Need a LoginStep bc Query functions for GraphQL run right away, so create issues in Login component.
 // Also can retrieve id from DB for Google Login
-export default function LoginStep() {
+export default function LoginStep({ email, password }) {
   console.log("---LOGINSTEP---");
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const ctx = useContext(UserContext);
   const firebaseAuth = getAuth(app);
-  const { email } = useParams();
+  // const { email } = useParams();
   let id;
-  let token = window.localStorage.getItem("token") || "";
+  let userData;
+  // let token = localStorage.getItem("token") || "";
 
-  const { loading, error, data } = useQuery(GET_USER_BY_EMAIL, {
-    variables: { email },
-    // pollInterval: 1000,
-  });
-  if (loading) console.warn("Loading", loading);
+  // const { loading, error, data } = useQuery(GET_USER_BY_EMAIL, {
+  //   variables: { email },
+  //   // pollInterval: 1000,
+  // });
+  // if (loading) console.warn("Loading", loading);
+
+  // useEffect(() => {
+  //   onAuthStateChanged(firebaseAuth, (user) => {
+  //     console.log("firebase auth state changed");
+  //     console.log("user", user);
+  //     if (user) {
+  //       console.log("token", token);
+  //       if (token) localStorage.removeItem("token");
+  //       localStorage.setItem("token", token);
+  //       ctx.user = { email: user.email };
+  //     } else {
+  //       navigate("/");
+  //     }
+  //   });
+  // }, []);
 
   useEffect(() => {
-    onAuthStateChanged(firebaseAuth, (user) => {
-      console.log("firebase auth state changed");
-      console.log("user", user);
-      if (user) {
-        token = user.accessToken;
-        console.log("token", token);
-        if (localStorage.getItem("token")) localStorage.removeItem("token");
-        window.localStorage.setItem("token", token);
-        ctx.user = { email: user.email };
-      } else {
-        navigate("/");
-      }
-    });
-  }, []);
+    if (userData) {
+      ctx.user.id = userData.id;
+      // if (token && data.getUserByEmail.id) {
+      //   console.log("navigate to Deposit..");
+      //   navigate(`/deposit/${data.getUserByEmail.id}`);
+      // } else if (!token) {
+      //   console.log("NO TOKEN");
+      //   return <NotAuthorized />;
+      // }
+      const userObj = {
+        id: userData.id,
+        name: userData.name,
+        email: userData.email,
+      };
+      console.log("axios call", userObj);
+      axios
+        .post("http://localhost:5050/login", userObj)
+        .then((response) => {
+          console.log("axios response", response);
+          console.log("axios response", response.data.token);
 
-  if (loading) console.error("LOADINGGGGG");
-  //   if (error) return <DatabaseDown />;
+          // Reset context if user already created bc don't want id bug
+          ctx.user = {};
+          ctx.user = { ...userObj };
 
-  if (data) {
-    if (data.getUserByEmail) {
-      console.log("data.getUserByEmail", data.getUserByEmail);
-      ctx.user.id = data.getUserByEmail;
-      if (token && data.getUserByEmail.id) {
-        console.log("navigate to Deposit..");
-        navigate(`/deposit/${data.getUserByEmail.id}`);
-      } else if (!token) {
-        console.log("NO TOKEN");
-        return <NotAuthorized />;
-      }
+          // Reset localStorage token in case not empty, then add new token
+          // localStorage.setItem("token", "");
+          // if (localStorage.getItem("token") ) localStorage.removeItem("token");
+          localStorage.removeItem("token");
+          localStorage.setItem("token", response.data.token);
+        })
+        .then(() => {
+          navigate(`/deposit/${userObj.id}`);
+        })
+        .catch((err) => console.error("axios ERROR", err.message));
+    } else {
+      console.log("NO DATA");
     }
-  } else {
-    console.log("NO DATA");
+  });
+
+  try {
+    let { user, loading } = QueryGetUserByEmail(email);
+    userData = user;
+    // if (loading) return <Loading id={paramId} />;
+
+    console.log("USER DATA", userData);
+  } catch (err) {
+    console.error("ERRORROROROROR", err.message);
+
+    if (err.message == "Data is null") {
+      console.error("DATA IS NULL");
+      // setShowPage(false);
+      //   return <PageNotFound id={paramId} />;
+    } else if (err.message == "Error getting User Data") {
+      return (
+        <h1 style={{ color: "red" }}>ERROR GETTING USER DATA: {err.message}</h1>
+      );
+    }
   }
 
   return (

@@ -42,11 +42,11 @@ function App() {
               <Route
                 path="/withdraw/:id"
                 // element={<PageWrapper pageComponent={<Withdraw />} />}
-                element={<AuthWrapper pageComponent="Withdraw" />}
+                element={<AuthWrapperNew pageComponent="Withdraw" />}
               />
               <Route
                 path="/data/:id"
-                element={<AuthWrapper pageComponent="UserData" />}
+                element={<AuthWrapperNew pageComponent="UserData" />}
               />
               {/*<Route path="/alldata" element={<AllData />} /> */}
               <Route path="/not-authorized" element={<NotAuthorized />} />

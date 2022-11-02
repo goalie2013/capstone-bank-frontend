@@ -38,6 +38,7 @@ export default function Home() {
         // setLoggedIn(true);
       } else {
         id = "";
+        setLoggedIn(false);
       }
     });
     if (firebaseAuth.currentUser !== null) setLoggedIn(true);
@@ -66,6 +67,11 @@ export default function Home() {
 
   return (
     <>
+      {/* {id ? (
+        <NavBar id={id} loggedIn={true} />
+      ) : (
+        <NavBar id={id} loggedIn={false} />
+      )} */}
       <NavBar id={id} />
       <div className="page-wrapper">
         <span

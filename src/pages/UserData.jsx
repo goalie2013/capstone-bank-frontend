@@ -11,6 +11,7 @@ import { MdOutlineAttachMoney } from "react-icons/md";
 import NotAuthorized from "../components/NotAuthorized";
 
 export default function UserData({ token, userId, userEmail }) {
+  console.count(" --- UserData ---");
   const [showLoading, setShowLoading] = useState(false);
   let { id: paramId } = useParams();
   let userName, balance, transactions, transactionsEl;
@@ -27,7 +28,6 @@ export default function UserData({ token, userId, userEmail }) {
     userName = name;
     balance = currentBalance;
     transactions = xTransactions;
-    console.log("name", userName, balance, transactions);
   } catch (err) {
     // if (err.message == "Loading") return <h1>Loading...</h1>;
   }

@@ -10,9 +10,11 @@ import { Link, useNavigate } from "react-router-dom";
 import { app } from "../firebase";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
 import GoogleSignIn from "../components/GoogleSignIn";
+import LoginStep from "../helper/LoginStep";
 
 export default function Login() {
   const [show, setShow] = useState(true);
+  const [loginStep, setLoginStep] = useState(true);
   const [status, setStatus] = useState("");
   // const [statusTextColor, setStatusTextColor] = useState("");
   const [nameTxtColor, setNameTxtColor] = useState("black");
@@ -58,7 +60,9 @@ export default function Login() {
         const user = userCredential.user;
         console.log("Logged In User", user);
 
-        navigate(`/login-success/${user.email}`);
+        // navigate(`/login-success/${user.email}`);
+        // return <LoginStep email={user.email} password={password} />;
+        setLoginStep(false);
 
         // setShow(false);
       })
@@ -68,7 +72,7 @@ export default function Login() {
       });
   }
 
-  return (
+  return loginStep ? (
     <>
       <NavBar id={id} />
       <div className="page-wrapper">
@@ -160,5 +164,7 @@ export default function Login() {
         />
       </div>
     </>
+  ) : (
+    <LoginStep email={email} password={password} />
   );
 }

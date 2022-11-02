@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import NavBar from "../components/NavBar";
 import CustomCard from "../components/Card";
 import Form from "react-bootstrap/Form";
@@ -15,7 +15,6 @@ import {
 import dayjs from "dayjs";
 import { COLORS } from "../themes";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 
 export default function Withdraw({ token, userId, userEmail }) {
   console.log("----- WITHDRAW -----");
@@ -57,8 +56,7 @@ export default function Withdraw({ token, userId, userEmail }) {
 
   // Get User Query
   try {
-    let { queriedId, currentBalance, xTransactions } = QueryGetUser(userId);
-    // userId = queriedId;
+    let { currentBalance, xTransactions } = QueryGetUser(userId);
     balance = currentBalance;
     transactions = xTransactions;
   } catch (err) {

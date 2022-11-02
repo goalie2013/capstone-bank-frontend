@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useContext } from "react";
 import NavBar from "../components/NavBar";
 import SubmitBtn from "../components/SubmitBtn";
 import CustomCard from "../components/Card";
@@ -45,7 +45,6 @@ export default function Deposit({ userId, userEmail }) {
   // Get User Query: Retrieve Balance & Transactions
   try {
     let { loading, currentBalance, xTransactions } = QueryGetUser(userId);
-    // userId = queriedId;
     balance = currentBalance;
     transactions = xTransactions;
   } catch (err) {
