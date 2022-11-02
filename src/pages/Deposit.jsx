@@ -91,7 +91,7 @@ export default function Deposit({ userId, userEmail }) {
 
   return (
     <>
-      <NavBar id={userId} />
+      {/* <NavBar id={userId} /> */}
       <div className="page-wrapper">
         <h1>Deposit</h1>
 

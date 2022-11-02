@@ -27,7 +27,7 @@ function App() {
         }}
       >
         <BrowserRouter>
-          {/* <NavBar /> */}
+          <NavBar />
           <main>
             <Routes>
               <Route path="/" element={<Home />} />

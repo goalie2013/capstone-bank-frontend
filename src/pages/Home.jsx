@@ -72,7 +72,7 @@ export default function Home() {
       ) : (
         <NavBar id={id} loggedIn={false} />
       )} */}
-      <NavBar id={id} />
+      {/* <NavBar id={id} /> */}
       <div className="page-wrapper">
         <span
           style={{
@@ -87,20 +87,20 @@ export default function Home() {
             alt="Money Bag"
             style={{ width: "5rem", marginRight: "1.5rem" }}
           />
-          <h1 style={{ fontWeight: 900 }}>Bad Bank</h1>
+          <h1 style={{ fontWeight: 900 }}>Better Bank</h1>
         </span>
         <CustomCard
           bgHeaderColor={COLORS.cardHeader}
           txtColor="#000"
           bgColor={COLORS.cardBackground}
           header="Welcome"
-          title="Welcome to our Bank"
+          title="Welcome to Better Bank"
           text="Deposit and withdraw savings, and view your transaction history."
           body={
             <img
               src={moneyPic}
               className="img-fluid"
-              alt="Bad Bank Logo. Palm with Coin"
+              alt="Better Bank Logo. Palm with Coin"
             />
           }
         />

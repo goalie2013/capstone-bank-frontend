@@ -10,6 +10,7 @@ import { Button } from "react-bootstrap";
 import { COLORS } from "../themes";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../index";
+import { QueryGetUserByEmail } from "../helper/queryMutationHelper";
 
 export default function NavBar({ id }) {
   const navigate = useNavigate();
@@ -22,9 +23,13 @@ export default function NavBar({ id }) {
   const [btnTxt, setBtnTxt] = useState(
     firebaseAuth.currentUser ? "Logout" : "Log In"
   );
+  const [email, setEmail] = useState("");
+
+  console.log("ctx", ctx);
+  ctx.user.id ? (id = ctx.user.id) : (id = "");
 
   // console.log("NAVBAR ID", id);
-  console.log("---NAVBAR---");
+  console.count("---NAVBAR---");
   console.log("loggedIn", loggedIn);
   console.log("button txt", btnTxt);
   console.log("firebaseAuth.currentUser", firebaseAuth.currentUser);
@@ -35,6 +40,8 @@ export default function NavBar({ id }) {
       console.log("NAVBAR ONAUTHSTATECHANGED");
       if (userCredential) {
         console.log("userCredential.email", userCredential.email);
+        // if (!email) setEmail(userCredential.email);
+
         setLoggedIn(true);
         setBtnTxt("Logout");
       } else {
@@ -46,6 +53,26 @@ export default function NavBar({ id }) {
     });
     // if (firebaseAuth.currentUser !== null) setLoggedIn(true);
   }, [firebaseAuth.currentUser]);
+
+  try {
+    let { user } = QueryGetUserByEmail(email);
+
+    console.log("USER DATA", user);
+
+    if (user) id = user.id;
+  } catch (err) {
+    console.error("ERRORROROROROR", err.message);
+
+    if (err.message == "Data is null") {
+      console.error("DATA IS NULL");
+      // setShowPage(false);
+      //   return <PageNotFound id={paramId} />;
+    } else if (err.message == "Error getting User Data") {
+      return (
+        <h1 style={{ color: "red" }}>ERROR GETTING USER DATA: {err.message}</h1>
+      );
+    }
+  }
 
   const style = {
     backgroundColor: "#89abe3ff",

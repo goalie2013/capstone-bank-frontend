@@ -4,7 +4,7 @@ export default function Loading({ id }) {
   console.log("---Loading Component---");
   return (
     <>
-      <NavBar id={id} />
+      {/* <NavBar id={id} /> */}
       <div
         className="d-flex justify-content-center align-items-center"
         style={{ minHeight: "100vh" }}

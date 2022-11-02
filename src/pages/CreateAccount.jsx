@@ -54,7 +54,7 @@ export default function CreateAccount() {
       .post("https://betterbank.herokuapp.com/login", userObj)
       .then((response) => {
         console.log("axios response", response);
-        console.log("axios response", response.data.token);
+        console.log("axios response token", response.data.token);
 
         // Reset context if user already created bc don't want id bug
         ctx.user = {};
@@ -126,7 +126,7 @@ export default function CreateAccount() {
 
   return (
     <>
-      <NavBar id={id} />
+      {/* <NavBar id={id} /> */}
       <div className="page-wrapper">
         <h1 style={{ fontWeight: 900, marginBottom: "0.5rem" }}>
           Create Account
