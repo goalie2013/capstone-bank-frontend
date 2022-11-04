@@ -74,23 +74,21 @@ export default function Home() {
       )} */}
       {/* <NavBar id={id} /> */}
       <div className="page-wrapper">
-        <span
-          style={{
-            display: "flex",
-            flexDirection: "row",
-            alignItems: "flex-end",
-          }}
-        >
+        <span className="home-title-wrapper">
           <img
             src={moneyBag}
             className="img-fluid"
             alt="Money Bag"
-            style={{ width: "5rem", marginRight: "1.5rem" }}
+            style={{
+              width: "5rem",
+              marginRight: "1.5rem",
+              marginBottom: "0.25rem",
+            }}
           />
-          <h1 style={{ fontWeight: 900 }}>Better Bank</h1>
+          <h1 className="home-title">Better Bank</h1>
         </span>
         <CustomCard
-          bgHeaderColor={COLORS.cardHeader}
+          bgHeaderColor={COLORS.darkerTheme}
           txtColor="#000"
           bgColor={COLORS.cardBackground}
           header="Welcome"
@@ -122,7 +120,7 @@ export default function Home() {
             />
             <p
               style={{
-                fontSize: "0.75rem",
+                fontSize: "0.65rem",
                 textAlign: "center",
                 marginTop: "-1rem",
                 marginRight: "0.5rem",
@@ -157,7 +155,7 @@ export default function Home() {
             />
             <p
               style={{
-                fontSize: "0.75rem",
+                fontSize: "0.65rem",
                 textAlign: "center",
                 marginTop: "0.25rem",
                 marginRight: "0.5rem",
@@ -186,11 +184,12 @@ export default function Home() {
               style={{
                 width: "10rem",
                 marginBottom: "1.5rem",
+                marginTop: "0.6rem",
               }}
             />
             <p
               style={{
-                fontSize: "0.75rem",
+                fontSize: "0.65rem",
                 textAlign: "center",
                 marginTop: "-1rem",
               }}
@@ -199,7 +198,9 @@ export default function Home() {
                 Image by IconScout
               </a>
             </p>
-            <h5 style={{ textAlign: "center" }}>Fast Payment</h5>
+            <h5 style={{ textAlign: "center", marginTop: "0.25rem" }}>
+              Fast Payment
+            </h5>
           </div>
         </div>
       </div>

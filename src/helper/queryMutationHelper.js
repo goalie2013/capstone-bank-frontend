@@ -62,8 +62,9 @@ export function QueryGetUserByEmail(email) {
   //   throw new Error("Data is null");
   // }
 
+  console.log("user data", data);
   const user = data.getUserByEmail;
-  return { user, loading };
+  return { user };
 }
 
 export function QueryAllUsers() {

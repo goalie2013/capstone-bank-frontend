@@ -15,6 +15,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { app } from "../firebase";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import GoogleAuthCreateUser from "../components/GoogleAuth";
+import Loading from "../components/Loading";
 
 export default function CreateAccount() {
   const [show, setShow] = useState(true);
@@ -37,7 +38,7 @@ export default function CreateAccount() {
     console.error("Apollo Error", error);
     alert(error.message);
   }
-  if (loading) return "Loading";
+  if (loading) return <Loading />;
   if (data && data.createUser) {
     console.log("DATA PRESENT!!", data);
     const newUser = data.createUser;
@@ -54,7 +55,7 @@ export default function CreateAccount() {
       .post("https://betterbank.herokuapp.com/login", userObj)
       .then((response) => {
         console.log("axios response", response);
-        console.log("axios response token", response.data.token);
+        console.log("axios response access token", response.data.accessToken);
 
         // Reset context if user already created bc don't want id bug
         ctx.user = {};
@@ -64,7 +65,9 @@ export default function CreateAccount() {
         // localStorage.setItem("token", "");
         // if (localStorage.getItem("token") ) localStorage.removeItem("token");
         localStorage.removeItem("token");
-        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("token", response.data.accessToken);
+        localStorage.removeItem("refresh token");
+        localStorage.setItem("refresh token", response.data.refreshToken);
       })
       .then(() => {
         navigate(`/deposit/${newUser.id}`);
@@ -139,7 +142,7 @@ export default function CreateAccount() {
         </h5>
 
         <CustomCard
-          // bgHeaderColor={COLORS.cardHeader}
+          bgHeaderColor={COLORS.darkerTheme}
           // header="Create Account"
           bgColor={COLORS.cardBackground}
           statusText={status}

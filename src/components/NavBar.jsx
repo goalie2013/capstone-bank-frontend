@@ -11,8 +11,11 @@ import { COLORS } from "../themes";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../index";
 import { QueryGetUserByEmail } from "../helper/queryMutationHelper";
+import NavBarLoggedIn from "./NavBarLoggedIn";
+import NavBarLoggedOut from "./NavBarLoggedOut";
 
-export default function NavBar({ id }) {
+// export default function NavBar({ id }) {
+export default function NavBar() {
   const navigate = useNavigate();
   const ctx = useContext(UserContext);
   const firebaseAuth = getAuth(app);
@@ -24,6 +27,7 @@ export default function NavBar({ id }) {
     firebaseAuth.currentUser ? "Logout" : "Log In"
   );
   const [email, setEmail] = useState("");
+  let id;
 
   console.log("ctx", ctx);
   ctx.user.id ? (id = ctx.user.id) : (id = "");
@@ -40,7 +44,7 @@ export default function NavBar({ id }) {
       console.log("NAVBAR ONAUTHSTATECHANGED");
       if (userCredential) {
         console.log("userCredential.email", userCredential.email);
-        // if (!email) setEmail(userCredential.email);
+        if (!email) setEmail(userCredential.email);
 
         setLoggedIn(true);
         setBtnTxt("Logout");
@@ -55,7 +59,7 @@ export default function NavBar({ id }) {
   }, [firebaseAuth.currentUser]);
 
   try {
-    let { user } = QueryGetUserByEmail(email);
+    let { user, loading } = QueryGetUserByEmail(email);
 
     console.log("USER DATA", user);
 
@@ -142,77 +146,21 @@ export default function NavBar({ id }) {
             id="basic-navbar-nav"
             className="justify-content-end"
           >
-            <Nav>
-              {btnTxt === "Log In" ? (
-                <Nav.Item>
-                  <Nav.Link>
-                    <Link
-                      to="/createaccount"
-                      style={style}
-                      className="link"
-                      onClick={() => setExpanded(false)}
-                    >
-                      Create Account
-                    </Link>
-                  </Nav.Link>
-                </Nav.Item>
-              ) : (
-                <></>
-              )}
-
-              <Nav.Item>
-                <Nav.Link>
-                  <Link
-                    to={`/deposit/${id}`}
-                    style={style}
-                    className="link"
-                    onClick={() => setExpanded(false)}
-                  >
-                    Deposit
-                  </Link>
-                </Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link>
-                  <Link
-                    to={`/withdraw/${id}`}
-                    style={style}
-                    className="link"
-                    onClick={() => setExpanded(false)}
-                  >
-                    Withdraw
-                  </Link>
-                </Nav.Link>
-              </Nav.Item>
-              <Nav.Item>
-                <Nav.Link>
-                  <Link
-                    to={`/data/${id}`}
-                    style={style}
-                    className="link"
-                    onClick={() => setExpanded(false)}
-                  >
-                    Transactions
-                  </Link>
-                </Nav.Link>
-              </Nav.Item>
-              <Button
-                className="loginOutBtn"
-                style={{
-                  background: COLORS.lighterTheme,
-                  color: COLORS.darkerTheme,
-                  fontWeight: 800,
-                  boxShadow: "0 0.2rem 0.75rem rgba(0, 0, 0, 0.3)",
-                  marginLeft: "1rem",
-                }}
-                onClick={() => {
-                  loggedIn ? logout() : login();
-                  setExpanded(false);
-                }}
-              >
-                {btnTxt}
-              </Button>
-            </Nav>
+            {loggedIn ? (
+              <NavBarLoggedIn
+                id={id}
+                style={style}
+                setExpanded={setExpanded}
+                logout={logout}
+              />
+            ) : (
+              <NavBarLoggedOut
+                id={id}
+                style={style}
+                setExpanded={setExpanded}
+                login={login}
+              />
+            )}
           </Navbar.Collapse>
         </Container>
       </Navbar>

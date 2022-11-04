@@ -11,6 +11,7 @@ import NavBar from "./NavBar";
 import NotAuthorized from "./NotAuthorized";
 import { QueryGetUserByEmail } from "../helper/queryMutationHelper";
 import axios from "axios";
+import Loading from "./Loading";
 
 // Need a LoginStep bc Query functions for GraphQL run right away, so create issues in Login component.
 // Also can retrieve id from DB for Google Login
@@ -23,7 +24,7 @@ export default function LoginStep({ email, password }) {
   // const { email } = useParams();
   let id;
   let userData;
-  // let token = localStorage.getItem("token") || "";
+  let token = localStorage.getItem("token") || "";
 
   // const { loading, error, data } = useQuery(GET_USER_BY_EMAIL, {
   //   variables: { email },
@@ -31,20 +32,20 @@ export default function LoginStep({ email, password }) {
   // });
   // if (loading) console.warn("Loading", loading);
 
-  // useEffect(() => {
-  //   onAuthStateChanged(firebaseAuth, (user) => {
-  //     console.log("firebase auth state changed");
-  //     console.log("user", user);
-  //     if (user) {
-  //       console.log("token", token);
-  //       if (token) localStorage.removeItem("token");
-  //       localStorage.setItem("token", token);
-  //       ctx.user = { email: user.email };
-  //     } else {
-  //       navigate("/");
-  //     }
-  //   });
-  // }, []);
+  useEffect(() => {
+    onAuthStateChanged(firebaseAuth, (user) => {
+      console.log("firebase auth state changed");
+      console.log("user", user);
+      if (user) {
+        console.log("token", token);
+        if (token) localStorage.removeItem("token");
+        localStorage.setItem("token", token);
+        ctx.user = { email: user.email };
+      } else {
+        navigate("/");
+      }
+    });
+  }, []);
 
   useEffect(() => {
     if (userData) {
@@ -89,8 +90,8 @@ export default function LoginStep({ email, password }) {
 
   try {
     let { user, loading } = QueryGetUserByEmail(email);
+    if (loading) return <Loading />;
     userData = user;
-    // if (loading) return <Loading id={paramId} />;
 
     console.log("USER DATA", userData);
   } catch (err) {
@@ -117,7 +118,7 @@ export default function LoginStep({ email, password }) {
         //TODO:
         // <NotAuthorized />
         <>
-          <NavBar id={id} />
+          {/* <NavBar id={id} /> */}
           <div
             className="d-flex justify-content-center align-items-center"
             style={{ minHeight: "100vh" }}

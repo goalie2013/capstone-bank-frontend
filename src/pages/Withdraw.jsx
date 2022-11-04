@@ -111,13 +111,13 @@ export default function Withdraw({ token, userId, userEmail }) {
 
   return (
     <>
-      <NavBar id={userId} />
+      {/* <NavBar id={userId} /> */}
       <div className="page-wrapper">
         <h1>Withdraw</h1>
         <CustomCard
-          bgHeaderColor={COLORS.cardHeader}
+          bgHeaderColor={COLORS.darkerTheme}
           header="Withdraw From Account"
-          bgColor={COLORS.cardBackground}
+          bgColor={COLORS.cardBodyBg}
           statusText={status}
           statusColor={textColor}
           body={
@@ -151,7 +151,11 @@ export default function Withdraw({ token, userId, userEmail }) {
               </Form.Group>
 
               {showSubmit ? (
-                <SubmitBtn name="Withdraw" handleClick={handleWithdraw} />
+                <SubmitBtn
+                  name="Withdraw"
+                  handleClick={handleWithdraw}
+                  bgColor={COLORS.darkerTheme}
+                />
               ) : (
                 <SubmitBtn name="Withdraw" disabled="true" />
               )}

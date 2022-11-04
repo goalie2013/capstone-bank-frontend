@@ -5,12 +5,11 @@ import Deposit from "./Deposit";
 import Withdraw from "./Withdraw";
 import NotAuthorized from "../components/NotAuthorized";
 import UserData from "./UserData";
+import DeleteAccount from "./DeleteAccount";
 import DatabaseDown from "../components/DatabaseDown";
 import PageNotFound from "../components/PageNotFound";
 import { UserContext } from "../index";
 import { useParams } from "react-router-dom";
-import { useQuery } from "@apollo/client";
-import { GET_USER_BY_EMAIL } from "../queries/userQueries";
 import axios from "axios";
 import Loading from "../components/Loading";
 import { QueryGetUserByEmail } from "../helper/queryMutationHelper";
@@ -68,16 +67,31 @@ export default function AuthWrapperNew({ pageComponent }) {
         // If already have user Id -> Go to page;
         // Else, set token globally & wait for data to get user Id
         console.log("userId", userId);
-        if (userId) {
-          setShowPage(true);
-        } else {
-          setJwt(token);
-        }
+        // if (userId && email) {
+        //   setShowPage(true);
+        // } else {
+        //   setJwt(token);
+        // }
+        setJwt(token);
       })
       .catch((err) => {
         console.error("axios ERROR", err.message);
         if (err.message === "Network Error") setServerDown(true);
-        else setShowModal(true);
+        else if (err.message === "Request failed with status code 401") {
+          axios
+            .post("https://betterbank.herokuapp.com/newtoken", {
+              token: localStorage.getItem("refresh token"),
+            })
+            .then((response) => {
+              console.log("newtoken response", response);
+              localStorage.setItem("token", response.data.accessToken);
+              setJwt(response.data.accessToken);
+            })
+            .catch((err) => {
+              console.error("newtoken Error", err.message);
+              setShowModal(true);
+            });
+        } else setShowModal(true);
       });
   }, []);
 
@@ -110,7 +124,7 @@ export default function AuthWrapperNew({ pageComponent }) {
   //     console.log("USER ID AND PARAM ID NOT THE SAME");
   //     return <NotAuthorized id={ctx.user.id} />;
   //   }
-
+  const startTime = new Date();
   if (userData) {
     console.log("DATA FOUND");
     console.log("jwt", jwt);
@@ -132,12 +146,13 @@ export default function AuthWrapperNew({ pageComponent }) {
           return <Withdraw userId={userId} userEmail={userData.email} />;
         case "UserData":
           return <UserData userId={userId} userEmail={userData.email} />;
+        case "DeleteAccount":
+          return <DeleteAccount user={userData} />;
       }
     }
   } else {
     //TODO: Doesn't work
     // If takes longer than 8 seconds to find user data, show Page Not Found
-    const startTime = new Date();
 
     const endTime = new Date();
     let timeDiff = endTime - startTime; //in ms
@@ -148,7 +163,7 @@ export default function AuthWrapperNew({ pageComponent }) {
     const seconds = Math.round(timeDiff);
     console.log(seconds + " seconds");
 
-    if (seconds > 8 && !userData) return <PageNotFound id={paramId} />;
+    if (seconds > 8) return <PageNotFound id={paramId} />;
   }
 
   // ** setState in global scope is BAD. rerender loop

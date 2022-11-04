@@ -57,7 +57,7 @@ export default function UserData({ token, userId, userEmail }) {
 
   return (
     <>
-      <NavBar id={userId} />
+      {/* <NavBar id={userId} /> */}
       {nameCapitalized ? (
         <div className="page-wrapper">
           <h1
@@ -82,10 +82,10 @@ export default function UserData({ token, userId, userEmail }) {
           </h3>
           {/* <h3>Transaction History</h3> */}
           <CustomCard
-            bgHeaderColor="#000"
-            // header={`${userName} Transaction History`}
+            bgHeaderColor={COLORS.darkerTheme}
+            bgColor={COLORS.cardBodyBg}
             body={<h4>{transactionsEl}</h4>}
-          ></CustomCard>
+          />
         </div>
       ) : (
         <div

@@ -48,6 +48,10 @@ function App() {
                 path="/data/:id"
                 element={<AuthWrapperNew pageComponent="UserData" />}
               />
+              <Route
+                path="/deleteAccount/:id"
+                element={<AuthWrapperNew pageComponent="DeleteAccount" />}
+              />
               {/*<Route path="/alldata" element={<AllData />} /> */}
               <Route path="/not-authorized" element={<NotAuthorized />} />
 

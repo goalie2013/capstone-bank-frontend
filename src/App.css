@@ -50,6 +50,11 @@ body {
     width: 25%;
   }
 
+  .home-title {
+    font-size: 3.5rem;
+    font-weight: 900;
+  }
+
   .homeImgsWrapper {
     display: flex;
     flex-direction: column;
@@ -85,6 +90,11 @@ body {
     margin-left: "1rem";
   }
 
+  .home-title {
+    font-size: 4rem;
+    font-weight: 900;
+  }
+
   .homeImgsWrapper {
     display: flex;
     flex-direction: row;
@@ -93,6 +103,14 @@ body {
     width: 100%;
     margin-top: "5rem";
   }
+}
+
+.home-title-wrapper {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-end;
+  padding: 0.75rem;
+  font-family: "Lobster";
 }
 
 /* Create Account */
@@ -228,4 +246,15 @@ body {
   width: 100%;
   /* margin-top: 5rem; */
   z-index: 1;
+}
+
+#dropdown-autoclose-true::after {
+  display: none;
+}
+
+#navLogOutBtn:active {
+  background: none;
+}
+#navDeleteBtn:active {
+  background: none;
 }

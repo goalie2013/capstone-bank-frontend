@@ -96,9 +96,9 @@ export default function Deposit({ userId, userEmail }) {
         <h1>Deposit</h1>
 
         <CustomCard
-          bgHeaderColor={COLORS.cardHeader}
+          bgHeaderColor={COLORS.darkerTheme}
           header="Deposit Into Account"
-          bgColor={COLORS.cardBackground}
+          bgColor={COLORS.cardBodyBg}
           statusText={status}
           statusColor={textColor}
           body={
@@ -133,7 +133,11 @@ export default function Deposit({ userId, userEmail }) {
               </Form.Group>
 
               {showSubmit ? (
-                <SubmitBtn name="Deposit" handleClick={handleDeposit} />
+                <SubmitBtn
+                  name="Deposit"
+                  handleClick={handleDeposit}
+                  bgColor={COLORS.darkerTheme}
+                />
               ) : (
                 <SubmitBtn name="Deposit" disabled="true" />
               )}

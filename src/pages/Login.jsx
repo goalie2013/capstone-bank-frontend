@@ -74,7 +74,7 @@ export default function Login() {
 
   return loginStep ? (
     <>
-      <NavBar id={id} />
+      {/* <NavBar id={id} /> */}
       <div className="page-wrapper">
         <h1 style={{ fontWeight: 900, marginBottom: "0.5rem" }}>Log In</h1>
         <h5 style={{ marginTop: "1rem" }}>

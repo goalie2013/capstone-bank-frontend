@@ -54,6 +54,7 @@ const authLink = setContext((_, { headers }) => {
   // get the authentication token from local storage if it exists
   const token = localStorage.getItem("token");
   // return the headers to the context so httpLink can read them
+  console.log("index authLink");
   return {
     headers: {
       ...headers,
@@ -64,7 +65,7 @@ const authLink = setContext((_, { headers }) => {
 
 console.log("creating Apollo Client...");
 const client = new ApolloClient({
-  // uri: `http://localhost:5050/graphql`,
+  // uri: `http://betterbank.herokuapp.com/graphql`,
   link: from([errorLink, httpLink]),
   cache: new InMemoryCache({ addTypename: false }),
   // cache,
