@@ -1,13 +1,10 @@
 import React, { useState, useContext, useEffect } from "react";
 import Container from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
 import Navbar from "react-bootstrap/Navbar";
 import { Link } from "react-router-dom";
 import { app } from "../firebase";
 import { getAuth } from "firebase/auth";
 import moneyBag from "../assets/money-bag.png";
-import { Button } from "react-bootstrap";
-import { COLORS } from "../themes";
 import { useNavigate } from "react-router-dom";
 import { UserContext } from "../index";
 import { QueryGetUserByEmail } from "../helper/queryMutationHelper";
@@ -35,7 +32,6 @@ export default function NavBar() {
   // console.log("NAVBAR ID", id);
   console.count("---NAVBAR---");
   console.log("loggedIn", loggedIn);
-  console.log("button txt", btnTxt);
   console.log("firebaseAuth.currentUser", firebaseAuth.currentUser);
 
   useEffect(() => {

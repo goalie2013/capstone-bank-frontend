@@ -1,5 +1,4 @@
 import React, { useState, useContext } from "react";
-import NavBar from "../components/NavBar";
 import CustomCard from "../components/Card";
 import Form from "react-bootstrap/Form";
 import SubmitBtn from "../components/SubmitBtn";
@@ -62,11 +61,11 @@ export default function Withdraw({ token, userId, userEmail }) {
   } catch (err) {
     console.error("ERRORROROROROR", err.message);
 
-    if (err.message == "Data is null") {
+    if (err.message === "Data is null") {
       console.error("DATA IS NULL");
       // setShowPage(false);
       return <PageNotFound id={paramId} />;
-    } else if (err.message == "Error getting User Data") {
+    } else if (err.message === "Error getting User Data") {
       return (
         <h1 style={{ color: "red" }}>ERROR GETTING USER DATA: {err.message}</h1>
       );

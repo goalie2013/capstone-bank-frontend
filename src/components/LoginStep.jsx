@@ -37,9 +37,9 @@ export default function LoginStep({ email, password }) {
       console.log("firebase auth state changed");
       console.log("user", user);
       if (user) {
-        console.log("token", token);
-        if (token) localStorage.removeItem("token");
-        localStorage.setItem("token", token);
+        // console.log("token", token);
+        // if (token) localStorage.removeItem("token");
+        // localStorage.setItem("token", token);
         ctx.user = { email: user.email };
       } else {
         navigate("/");
@@ -67,17 +67,15 @@ export default function LoginStep({ email, password }) {
         .post("https://betterbank.herokuapp.com/login", userObj)
         .then((response) => {
           console.log("axios response", response);
-          console.log("axios response", response.data.token);
+          console.log("axios response", response.data.accessToken);
 
           // Reset context if user already created bc don't want id bug
           ctx.user = {};
           ctx.user = { ...userObj };
 
           // Reset localStorage token in case not empty, then add new token
-          // localStorage.setItem("token", "");
-          // if (localStorage.getItem("token") ) localStorage.removeItem("token");
           localStorage.removeItem("token");
-          localStorage.setItem("token", response.data.token);
+          localStorage.setItem("token", response.data.accessToken);
         })
         .then(() => {
           navigate(`/deposit/${userObj.id}`);

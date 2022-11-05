@@ -10,11 +10,15 @@ import DatabaseDown from "../components/DatabaseDown";
 import PageNotFound from "../components/PageNotFound";
 import { UserContext } from "../index";
 import { useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+// import { siteAuth } from "../helper/authHelper";
+// import { logout } from "../components/NavBar";
 import axios from "axios";
 import Loading from "../components/Loading";
 import { QueryGetUserByEmail } from "../helper/queryMutationHelper";
 
 export default function AuthWrapperNew({ pageComponent }) {
+  const navigate = useNavigate();
   const [showModal, setShowModal] = useState(false);
   const [showServerDown, setServerDown] = useState(false);
   const [showPage, setShowPage] = useState(false);
@@ -28,6 +32,14 @@ export default function AuthWrapperNew({ pageComponent }) {
   console.count("----- AUTHWRAPPERNew ------");
   console.log("pageComponent", pageComponent);
   console.log("EMAIL", email);
+
+  function logout() {
+    console.log("logout FUNCTION Called");
+    firebaseAuth.signOut();
+    ctx.user = {};
+    localStorage.removeItem("token");
+    navigate("/");
+  }
 
   // Authorize user by sending JWT to Server & verifying
   useEffect(() => {
@@ -54,9 +66,9 @@ export default function AuthWrapperNew({ pageComponent }) {
     const token = localStorage.getItem("token");
     console.log("token from localStorage", token);
     // if (token && token !== jwt) setJwt(token);
-
     axios
-      .post("https://betterbank.herokuapp.com/authorize", ctx.user, {
+      // https://betterbank.herokuapp.com/authorize
+      .post("http://localhost:5050/authorize", ctx.user, {
         headers: {
           "Authorization": `Bearer ${token}`,
         },
@@ -67,20 +79,28 @@ export default function AuthWrapperNew({ pageComponent }) {
         // If already have user Id -> Go to page;
         // Else, set token globally & wait for data to get user Id
         console.log("userId", userId);
-        // if (userId && email) {
-        //   setShowPage(true);
-        // } else {
-        //   setJwt(token);
-        // }
+        // if (userId && email) setShowPage(true);
+        // else setJwt(token);
         setJwt(token);
       })
       .catch((err) => {
         console.error("axios ERROR", err.message);
         if (err.message === "Network Error") setServerDown(true);
+        // Invalid or Expired token --> Log user out
+        else if (err.message === "Request failed with status code 403") {
+          logout();
+        }
+        // Else if: Token sent to /authorize was null -->
+        // send request for new access token using refresh token
         else if (err.message === "Request failed with status code 401") {
+          const refreshToken = localStorage.getItem("refresh token");
+          // If No refresh token either --> Log user out
+          if (refreshToken == null || !refreshToken) logout();
+
           axios
-            .post("https://betterbank.herokuapp.com/newtoken", {
-              token: localStorage.getItem("refresh token"),
+            // https://betterbank.herokuapp.com/newtoken
+            .post("http://localhost:5050/newtoken", {
+              token: refreshToken,
             })
             .then((response) => {
               console.log("newtoken response", response);
@@ -89,7 +109,9 @@ export default function AuthWrapperNew({ pageComponent }) {
             })
             .catch((err) => {
               console.error("newtoken Error", err.message);
-              setShowModal(true);
+              if (err.message === "Request failed with status code 403")
+                logout();
+              else setShowModal(true);
             });
         } else setShowModal(true);
       });
@@ -99,9 +121,9 @@ export default function AuthWrapperNew({ pageComponent }) {
   let userData;
   try {
     let { user, loading } = QueryGetUserByEmail(email);
-    userData = user;
-    // if (loading) return <Loading id={paramId} />;
+    if (loading) return <Loading id={paramId} />;
 
+    userData = user;
     console.log("USER DATA", userData);
   } catch (err) {
     console.error("ERRORROROROROR", err.message);
@@ -118,7 +140,7 @@ export default function AuthWrapperNew({ pageComponent }) {
   }
 
   // If user ID does NOT equal the parameter ID ==> Not Authorized
-  //   console.log("ctx.user & ctx.user.id", ctx.user, ctx.user.id);
+  //   console.log("ctx.user & ctx.user.id", ctx.user.id);
   //   console.log("PARAM ID", paramId);
   //   if (ctx.user && ctx.user.id && ctx.user.id !== paramId) {
   //     console.log("USER ID AND PARAM ID NOT THE SAME");
@@ -151,7 +173,6 @@ export default function AuthWrapperNew({ pageComponent }) {
       }
     }
   } else {
-    //TODO: Doesn't work
     // If takes longer than 8 seconds to find user data, show Page Not Found
 
     const endTime = new Date();
@@ -166,32 +187,27 @@ export default function AuthWrapperNew({ pageComponent }) {
     if (seconds > 8) return <PageNotFound id={paramId} />;
   }
 
-  // ** setState in global scope is BAD. rerender loop
-  //   if (showPage) {
-  //     switch (pageComponent) {
-  //       case "Deposit":
-  //         return <Deposit userId={userId} userEmail={email} />;
-  //       case "Withdraw":
-  //         return <Withdraw userId={id} userEmail={email} />;
-  //       case "UserData":
-  //         return <UserData userId={id} userEmail={email} />;
-  //     }
-  //   }
   return (
     <>
       {showModal ? (
-        <>
-          <NotAuthorized id={paramId} />
-        </>
+        <NotAuthorized id={paramId} />
       ) : showServerDown ? (
-        <>
-          <DatabaseDown />
-        </>
+        <DatabaseDown />
       ) : (
-        <>
-          <Loading id={paramId} />
-        </>
+        <Loading id={paramId} />
       )}
     </>
   );
 }
+
+// ** setState in global scope is BAD. rerender loop
+//   if (showPage) {
+//     switch (pageComponent) {
+//       case "Deposit":
+//         return <Deposit userId={userId} userEmail={email} />;
+//       case "Withdraw":
+//         return <Withdraw userId={id} userEmail={email} />;
+//       case "UserData":
+//         return <UserData userId={id} userEmail={email} />;
+//     }
+//   }

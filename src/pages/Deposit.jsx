@@ -1,11 +1,11 @@
 import React, { useState, useContext } from "react";
-import NavBar from "../components/NavBar";
 import SubmitBtn from "../components/SubmitBtn";
 import CustomCard from "../components/Card";
 import Form from "react-bootstrap/Form";
 import { UserContext } from "../index";
 import PageNotFound from "../components/PageNotFound";
 import { handleChange } from "../helper/handleHelper";
+import Base64Downloader from "react-base64-downloader";
 import {
   QueryGetUser,
   MutationUpdateUser,
@@ -14,23 +14,32 @@ import {
 import dayjs from "dayjs";
 import { COLORS } from "../themes";
 import { useParams } from "react-router-dom";
-import axios from "axios";
 import NotAuthorized from "../components/NotAuthorized";
+import axios from "axios";
+import { Button } from "react-bootstrap";
+
 // ** If grabbing value from onChange on each keychange, use ref OR e.target.value; NOT depositValue
 // ** setState won't update until next render, so messes up disabled/abled button
-
+function arrayBufferToBase64(buffer) {
+  var binary = "";
+  var bytes = [].slice.call(new Uint8Array(buffer));
+  bytes.forEach((b) => (binary += String.fromCharCode(b)));
+  return window.btoa(binary);
+}
 export default function Deposit({ userId, userEmail }) {
   console.log("----- DEPOSIT -----");
   // const ref = useRef(null);
   const [showSubmit, setShowSubmit] = useState(false);
   const [status, setStatus] = useState("");
+  const [switchState, setSwitchState] = useState(false);
+  const [showDownload, setDownload] = useState(false);
   const [depositValue, setDepositValue] = useState("");
   const [textColor, setTextColor] = useState("");
   const { id: paramId } = useParams();
   const ctx = useContext(UserContext);
   console.log("ctx", ctx);
 
-  let balance, transactions;
+  let balance, transactions, base64, screenshot, imgStr;
 
   if (ctx.user && !ctx.user.id) ctx.user.id = userId;
 
@@ -66,12 +75,13 @@ export default function Deposit({ userId, userEmail }) {
     console.log("-- handleDeposit FUNCTION --");
     console.log("depositVal", depositValue, typeof depositValue);
     const depositInt = parseInt(depositValue);
+    const timeStamp = dayjs().format("MM/DD/YYYY HH:mm:ss");
     balance += depositInt;
     transactions = [
       ...transactions,
       {
         info: `Deposit $${depositInt}`,
-        timeStamp: dayjs().format("MM/DD/YYYY HH:mm:ss"),
+        timeStamp,
       },
     ];
 
@@ -85,6 +95,50 @@ export default function Deposit({ userId, userEmail }) {
 
     setTextColor(COLORS.transactionComplete);
     setStatus("Deposit Complete!");
+
+    if (switchState) {
+      console.log("take screenshot");
+
+      axios
+        //https://betterbank.herokuapp.com/screenshot
+        .get("http://localhost:5050/screenshot", {
+          params: {
+            date: timeStamp,
+            type: "Deposit",
+            id: userId,
+          },
+          // responseType: "arraybuffer",
+        })
+        .then((result) => {
+          console.log("screenshot done", result);
+          // if (!fs.existsSync("screenshots")) fs.mkdirSync("screenshots");
+          // const buffer = Buffer.from(result.data, "screenshot");
+          screenshot = result.data;
+
+          imgStr = arrayBufferToBase64(result.data);
+          base64 = `data:image/jpeg;base64,${result.data}`;
+          // base64 = imgStr;
+          console.log(base64);
+          const linkSource = `data:image/jpeg;base64,${base64}`;
+          const downloadLink = document.createElement("a");
+          const fileName = "vct_illustration.jpeg";
+
+          downloadLink.href = linkSource;
+          downloadLink.download = fileName;
+          downloadLink.click();
+
+          setDownload(true);
+
+          setTextColor(COLORS.transactionComplete);
+          setStatus("Screenshot Complete");
+        })
+        .catch((err) => {
+          console.error("screenshot Error", err.message);
+          setTextColor("red");
+          setStatus("Could not complete Screenshot");
+        });
+    }
+
     setShowSubmit(false);
     setDepositValue("");
   }
@@ -93,6 +147,22 @@ export default function Deposit({ userId, userEmail }) {
     <>
       {/* <NavBar id={userId} /> */}
       <div className="page-wrapper">
+        <Form
+          style={{
+            position: "absolute",
+            top: "125px",
+            left: "75px",
+            margin: "0 auto",
+          }}
+        >
+          <Form.Check
+            type="switch"
+            id="snapshot-switch"
+            label="Snapshot of Transaction"
+            defaultChecked={switchState}
+            onChange={() => setSwitchState((prevVal) => !prevVal)}
+          />
+        </Form>
         <h1>Deposit</h1>
 
         <CustomCard
@@ -144,8 +214,32 @@ export default function Deposit({ userId, userEmail }) {
             </Form>
           }
         />
-        {/* DEVELOPMENT ONLY */}
-        {/* <div>{JSON.stringify(user)}</div> */}
+
+        {showDownload ? (
+          <>
+            <Base64Downloader base64={imgStr} downloadName="1x1_red_pixel">
+              Click to download
+            </Base64Downloader>
+            {/* <img src={URL.createObjectURL(baseArr[0])} /> */}
+            <Button
+              onClick={() => {
+                // const byteChars = btoa(base64);
+                const fileUrl = URL.createObjectURL(
+                  new Blob([screenshot], { type: "mimeType" })
+                );
+                let alink = document.createElement("a");
+                alink.href = { base64 };
+                alink.download = "SamplePDF.jpeg";
+                alink.click();
+              }}
+            >
+              Download
+            </Button>
+            <img src={base64} />
+          </>
+        ) : (
+          <></>
+        )}
       </div>
     </>
   );
