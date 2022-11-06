@@ -13,13 +13,14 @@ import Loading from "./Loading";
 export default function LoginStep({ email }) {
   console.log("---LOGINSTEP---");
   const [showModal, setShowModal] = useState(false);
+  const [userEmail, setUserEmail] = useState("");
   const navigate = useNavigate();
   const ctx = useContext(UserContext);
   const firebaseAuth = getAuth(app);
   const paramEmail = useParams();
   let id;
   let userData;
-  const userEmail = email ? email : paramEmail;
+  // const userEmail = email ? email : paramEmail;
 
   useEffect(() => {
     onAuthStateChanged(firebaseAuth, (user) => {
@@ -27,6 +28,7 @@ export default function LoginStep({ email }) {
       console.log("user", user);
       if (user) {
         ctx.user = { email: user.email };
+        setUserEmail(user.email);
       } else {
         navigate("/");
       }
