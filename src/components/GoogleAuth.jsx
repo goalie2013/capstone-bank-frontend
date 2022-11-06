@@ -10,8 +10,10 @@ import { QueryGetUserByEmail } from "../helper/queryMutationHelper";
 import { useMutation } from "@apollo/client";
 import { CREATE_USER } from "../mutations/userMutations";
 import { axiosLogin } from "../helper/axiosHelper";
+import Loading from "./Loading";
+import LoginStep from "./LoginStep";
 
-export default function GoogleAuth({ createUser, setShow, setStatus }) {
+export default function GoogleAuth({ setShow, setStatus }) {
   const [userEmail, setUserEmail] = useState("");
   const ctx = useContext(UserContext);
   const navigate = useNavigate();
@@ -34,20 +36,20 @@ export default function GoogleAuth({ createUser, setShow, setStatus }) {
   //   setStatus("Google Sign In Error");
   // }
 
-  // const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
-  // // if (loading) return;
-  // if (error) {
-  //   console.error("createUser Error", error);
-  //   return false;
-  // }
-  // if (data && data.createUser) {
-  //   console.log("DATA PRESENT!!", data);
-  //   const newUser = data.createUser;
-  //   console.log("axios /login call");
-  //   axiosLogin(newUser, ctx.user, navigate);
-  // } else {
-  //   console.log("NO DATA");
-  // }
+  const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
+  if (loading) return <Loading />;
+  if (error) {
+    console.error("createUser Error", error);
+    return false;
+  }
+  if (data && data.createUser) {
+    console.log("DATA PRESENT!!", data);
+    const newUser = data.createUser;
+    console.log("axios /login call");
+    axiosLogin(newUser, ctx.user, navigate);
+  } else {
+    console.log("NO DATA");
+  }
 
   function handleGoogleAuth() {
     signInWithPopup(auth, provider)
@@ -62,7 +64,7 @@ export default function GoogleAuth({ createUser, setShow, setStatus }) {
         const email = user.email;
 
         ctx.user = { name, email };
-        setUserEmail(email);
+        // setUserEmail(email);
 
         // Create User into Database
         try {
@@ -71,6 +73,7 @@ export default function GoogleAuth({ createUser, setShow, setStatus }) {
         } catch (err) {
           console.error("createUser Error", err.message);
         }
+        return <LoginStep email={email} />;
         setShow(false);
       })
       .catch((error) => {
