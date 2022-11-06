@@ -35,7 +35,7 @@ export default function GoogleAuth({ setShow, setStatus }) {
   // }
 
   const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
-  if (loading) return;
+  // if (loading) return;
   if (error) {
     console.error("createUser Error", error);
     return false;
