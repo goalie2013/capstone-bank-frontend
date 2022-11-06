@@ -106,6 +106,7 @@ export default function NavBar() {
         expanded={expanded}
         className="p-3 navbar"
         style={style}
+        zIndex={"1001"}
       >
         <Container>
           <Navbar.Brand>

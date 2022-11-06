@@ -1,7 +1,7 @@
 // import { useContext } from "react";
 import { app } from "../firebase";
-import { getAuth } from "firebase/auth";
 import { UserContext } from "../index";
+import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 
 // const navigate = useNavigate();
 // const ctx = useContext(UserContext);
@@ -23,4 +23,18 @@ export const siteAuth = {
   },
 };
 
-module.exports = { siteAuth };
+// Create User with Firebase Auth
+export function createFirebaseUser(firebaseAuth, email, password, setStatus) {
+  createUserWithEmailAndPassword(firebaseAuth, email, password)
+    .then((userCredential) => {
+      // User is now Signed In
+      const user = userCredential.user;
+      console.log("Firebase User", user);
+    })
+    .catch((error) => {
+      console.error("Firebase Create User Error", error.message);
+      setStatus(`Error: ${error.message}`);
+    });
+}
+
+export default { siteAuth, createFirebaseUser };

@@ -16,6 +16,7 @@ import { COLORS } from "../themes";
 import { useParams } from "react-router-dom";
 import html2canvas from "html2canvas";
 import Loading from "../components/Loading";
+import { useMediaQuery } from "react-responsive";
 
 export default function Withdraw({ token, userId, userEmail }) {
   console.log("----- WITHDRAW -----");
@@ -24,13 +25,16 @@ export default function Withdraw({ token, userId, userEmail }) {
   const [withdrawValue, setWithdrawValue] = useState("");
   const [textColor, setTextColor] = useState("");
   const [switchState, setSwitchState] = useState(
-    localStorage.getItem("auto-screenshot") === true ? true : false
+    localStorage.getItem("auto-snp") === "true" ? true : false
   );
   const [showDownload, setDownload] = useState(false);
   const [timestamp, setTimestamp] = useState("");
   const { id: paramId } = useParams();
   let balance, transactions, uri;
   const ctx = useContext(UserContext);
+  const isBigScreen = useMediaQuery({ query: "(min-width: 650px)" });
+  const isBiggerScreen = useMediaQuery({ query: "(min-width: 900px)" });
+  const isBiggestScreen = useMediaQuery({ query: "(min-width: 1200px)" });
 
   if (ctx.user && !ctx.user.id) ctx.user.id = userId;
 
@@ -129,11 +133,16 @@ export default function Withdraw({ token, userId, userEmail }) {
       <div className="page-wrapper">
         <Form
           style={{
-            position: "absolute",
-            top: "125px",
-            left: "75px",
+            position: "relative",
+            bottom: "65px",
+            right: isBiggestScreen
+              ? "390px"
+              : isBiggerScreen
+              ? "290px"
+              : isBigScreen
+              ? "190px"
+              : "90px",
             margin: "0 auto",
-            zIndex: "20",
           }}
         >
           <Form.Check

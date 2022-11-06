@@ -60,8 +60,13 @@ export default function UserData({ token, userId, userEmail }) {
     }
   }
 
-  const nameLower = userName.toLowerCase();
-  const nameCapitalized = nameLower[0].toUpperCase() + nameLower.slice(1);
+  // const nameLower = userName.toLowerCase();
+  const words = userName.split(" ");
+  const nameCapitalized = words
+    .map((word) => word[0].toUpperCase() + word.substring(1))
+    .join(" ");
+
+  // const nameCapitalized = nameLower[0].toUpperCase() + nameLower.slice(1);
 
   return (
     <>

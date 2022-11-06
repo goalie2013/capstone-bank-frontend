@@ -19,7 +19,7 @@ export function axiosLogin(userObj, user, navigate) {
     })
     .then(() => {
       console.log("Successful Login! Navigate to Deposit...");
-      navigate(`/deposit/${userObj.id}`);
+      navigate(`/deposit/${userObj.id}`, { replace: true });
     })
     .catch((err) => console.error("axios ERROR", err.message));
 }

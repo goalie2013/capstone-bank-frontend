@@ -14,6 +14,7 @@ import { app } from "../firebase";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import GoogleAuth from "../components/GoogleAuth";
 import Loading from "../components/Loading";
+import { createFirebaseUser } from "../helper/authHelper";
 
 export default function CreateAccount() {
   const [show, setShow] = useState(true);
@@ -29,8 +30,11 @@ export default function CreateAccount() {
   const navigate = useNavigate();
   const firebaseAuth = getAuth(app);
   let id;
-  ctx.user.id ? (id = ctx.user.id) : (id = "");
 
+  // If ctx.user.id exists --> go back page
+  if (ctx.user && ctx.user.id) navigate(-1);
+
+  // createUser GraphQL Mutation
   const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
   if (error) {
     console.error("Apollo Error", error);
@@ -57,45 +61,31 @@ export default function CreateAccount() {
     setPassTxtColor,
   };
 
-  const nameStyles = {
-    color: nameTxtColor,
-  };
-  const emailStyles = {
-    color: emailTxtColor,
-  };
-  const passStyles = {
-    color: passTxtColor,
-  };
+  const nameStyles = { color: nameTxtColor };
+  const emailStyles = { color: emailTxtColor };
+  const passStyles = { color: passTxtColor };
 
   function handleCreate() {
+    // Validate --> Firebase Auth create User --> createUser Mutation for DB
     console.log("handleCreate", name, email, password);
-    // e.preventDefault();
     if (!validate(name, "name", stateObj, setStateObj)) return;
     if (!validate(email, "email", stateObj, setStateObj)) return;
     if (!validate(password, "password", stateObj, setStateObj)) return;
 
     console.log("Passed validation!!");
 
-    // Create User with Firebase Auth
-    createUserWithEmailAndPassword(firebaseAuth, email, password)
-      .then((userCredential) => {
-        // User is now Signed In
-        const user = userCredential.user;
-        console.log("Firebase User", user);
-      })
-      .catch((error) => {
-        console.error("Firebase Create User Error", error.message);
-        setStatus(`Error: ${error.message}`);
-      });
+    // Create User Firebase Auth
+    createFirebaseUser(firebaseAuth, email, password, setStatus);
 
     // Create User into Database
     try {
-      console.log("createUser()");
+      console.log("call createUser()");
       createUser({ variables: { user: { name, email, password } } });
     } catch (err) {
       console.error("createUser Error", err.message);
     }
 
+    // Show Create Account Success Component
     setShow(false);
   }
 
@@ -180,7 +170,11 @@ export default function CreateAccount() {
                       handleClick={handleCreate}
                     />
                   </Form>
-                  <GoogleAuth setShow={setShow} setStatus={setStatus} />
+                  <GoogleAuth
+                    setShow={setShow}
+                    setStatus={setStatus}
+                    mode="Signup"
+                  />
                 </Card.Body>
               </>
             ) : (

@@ -16,6 +16,7 @@ import { useParams } from "react-router-dom";
 import NotAuthorized from "../components/NotAuthorized";
 import html2canvas from "html2canvas";
 import Loading from "../components/Loading";
+import { useMediaQuery } from "react-responsive";
 
 // ** If grabbing value from onChange on each keychange, use ref OR e.target.value; NOT depositValue
 // ** setState won't update until next render, so messes up disabled/abled button
@@ -26,7 +27,7 @@ export default function Deposit({ userId, userEmail }) {
   const [showSubmit, setShowSubmit] = useState(false);
   const [status, setStatus] = useState("");
   const [switchState, setSwitchState] = useState(
-    localStorage.getItem("auto-screenshot") === true ? true : false
+    localStorage.getItem("auto-snp") === "true" ? true : false
   );
   const [showDownload, setDownload] = useState(false);
   const [timestamp, setTimestamp] = useState("");
@@ -34,6 +35,9 @@ export default function Deposit({ userId, userEmail }) {
   const [textColor, setTextColor] = useState("");
   const { id: paramId } = useParams();
   const ctx = useContext(UserContext);
+  const isBigScreen = useMediaQuery({ query: "(min-width: 650px)" });
+  const isBiggerScreen = useMediaQuery({ query: "(min-width: 900px)" });
+  const isBiggestScreen = useMediaQuery({ query: "(min-width: 1200px)" });
 
   let balance, transactions, uri, base64;
 
@@ -127,11 +131,16 @@ export default function Deposit({ userId, userEmail }) {
       <div className="page-wrapper">
         <Form
           style={{
-            position: "absolute",
-            top: "125px",
-            left: "75px",
+            position: "relative",
+            bottom: "65px",
+            right: isBiggestScreen
+              ? "390px"
+              : isBiggerScreen
+              ? "290px"
+              : isBigScreen
+              ? "190px"
+              : "90px",
             margin: "0 auto",
-            zIndex: "20",
           }}
         >
           <Form.Check

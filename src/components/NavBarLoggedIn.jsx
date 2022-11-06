@@ -10,8 +10,7 @@ import { useMediaQuery } from "react-responsive";
 export default function NavBarLoggedIn({ id, style, setExpanded, logout }) {
   console.count("----NAVBARLOGGEDIN----");
   const navigate = useNavigate();
-  const isBigScreen = useMediaQuery({ query: "(min-width: 666px" });
-  const isSmallScreen = useMediaQuery({ query: "(max-width: 767px" });
+  const isSmallScreen = useMediaQuery({ query: "(max-width: 767px)" });
 
   return (
     <Nav>

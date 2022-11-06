@@ -13,7 +13,7 @@ import { axiosLogin } from "../helper/axiosHelper";
 import Loading from "./Loading";
 import LoginStep from "./LoginStep";
 
-export default function GoogleAuth({ setShow, setStatus }) {
+export default function GoogleAuth({ setShow, setStatus, mode }) {
   const [userEmail, setUserEmail] = useState("");
   const [userCreated, setUserCreated] = useState(false);
   const ctx = useContext(UserContext);
@@ -124,7 +124,9 @@ export default function GoogleAuth({ setShow, setStatus }) {
                   alt="Google Logo"
                   style={{ width: "3rem", marginRight: "0.8rem" }}
                 />
-                <span style={{ color: COLORS.lighterTheme }}>Sign Up</span>
+                <span style={{ color: COLORS.lighterTheme }}>
+                  {mode === "Login" ? "Log In" : "Sign Up"}
+                </span>
               </span>
             </Button>
           </div>

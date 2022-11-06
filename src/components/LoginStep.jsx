@@ -30,7 +30,7 @@ export default function LoginStep({ email }) {
         ctx.user = { email: user.email };
         setUserEmail(user.email);
       } else {
-        navigate("/");
+        navigate("/", { replace: true });
       }
     });
   }, []);
