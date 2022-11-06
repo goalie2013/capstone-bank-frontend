@@ -23,16 +23,16 @@ export default function GoogleAuth({ setShow, setStatus }) {
     "login_hint": "user@example.com",
   });
 
-  try {
-    const { user } = QueryGetUserByEmail(userEmail);
-    if (user) {
-      console.log("User already exists");
-      navigate(`/login-success/${userEmail}`);
-    }
-  } catch (err) {
-    console.error("QueryGetUserByEmail Error:", err.message);
-    setStatus("Google Sign In Error");
-  }
+  // try {
+  //   const { user } = QueryGetUserByEmail(userEmail);
+  //   if (user) {
+  //     console.log("User already exists");
+  //     navigate(`/login-success/${userEmail}`);
+  //   }
+  // } catch (err) {
+  //   console.error("QueryGetUserByEmail Error:", err.message);
+  //   setStatus("Google Sign In Error");
+  // }
 
   const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
   if (loading) return;
