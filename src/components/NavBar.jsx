@@ -94,6 +94,7 @@ export default function NavBar() {
     // setBtnTxt("Log In");
     ctx.user = {};
     localStorage.removeItem("token");
+    localStorage.removeItem("refresh token");
     navigate("/");
   }
 
