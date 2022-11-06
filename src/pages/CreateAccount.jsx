@@ -183,11 +183,7 @@ export default function CreateAccount() {
                         handleClick={handleCreate}
                       />
                     </Form>
-                    <GoogleAuth
-                      createUser={createUser}
-                      setShow={setShow}
-                      setStatus={setStatus}
-                    />
+                    <GoogleAuth setShow={setShow} setStatus={setStatus} />
                   </Card.Body>
                 </>
               ) : (
