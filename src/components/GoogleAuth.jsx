@@ -13,12 +13,7 @@ import { axiosLogin } from "../helper/axiosHelper";
 import Loading from "./Loading";
 import LoginStep from "./LoginStep";
 
-export default function GoogleAuth({
-  createUser,
-  setShow,
-  setStatus,
-  setUserCreated,
-}) {
+export default function GoogleAuth({ createUser, setShow, setStatus }) {
   const [userEmail, setUserEmail] = useState("");
   const [userCreated, setUserCreated] = useState(false);
   const ctx = useContext(UserContext);

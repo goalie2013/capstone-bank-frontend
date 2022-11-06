@@ -187,8 +187,6 @@ export default function CreateAccount() {
                       createUser={createUser}
                       setShow={setShow}
                       setStatus={setStatus}
-                      setUserEmail={setUserEmail}
-                      setUserCreated={setUserCreated}
                     />
                   </Card.Body>
                 </>
