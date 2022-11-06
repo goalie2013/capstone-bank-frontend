@@ -73,7 +73,8 @@ export default function GoogleAuth({ createUser, setShow, setStatus }) {
         } catch (err) {
           console.error("createUser Error", err.message);
         }
-        return <LoginStep email={email} />;
+        // return <LoginStep email={email} />;
+        navigate(`/login-success/${email}`);
         setShow(false);
       })
       .catch((error) => {
