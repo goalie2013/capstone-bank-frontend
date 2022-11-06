@@ -41,6 +41,7 @@ export default function AuthWrapperNew({ pageComponent }) {
     firebaseAuth.signOut();
     ctx.user = {};
     localStorage.removeItem("token");
+    localStorage.removeItem("refresh token");
     navigate("/");
   }
 

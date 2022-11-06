@@ -144,7 +144,7 @@ export default function Login() {
 
                     <SubmitBtn name="Log In" handleClick={handleLogin} />
                   </Form>
-                  <GoogleAuth />
+                  <GoogleAuth setShow={setShow} setStatus={setStatus} />
                 </Card.Body>
               </>
             ) : (
