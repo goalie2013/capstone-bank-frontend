@@ -8,7 +8,6 @@ import { handleChange, downloadScreenshot } from "../helper/handleHelper";
 import {
   QueryGetUser,
   MutationUpdateUser,
-  QueryGetUserByEmail,
 } from "../helper/queryMutationHelper";
 import dayjs from "dayjs";
 import { COLORS } from "../themes";
@@ -116,6 +115,7 @@ export default function Deposit({ userId, userEmail }) {
     setTextColor(COLORS.transactionComplete);
     setStatus("Deposit Complete!");
 
+    // If Snapshot Switch is on --> Take Screenshot
     if (switchState) {
       console.log("take screenshot");
       setDownload(true);

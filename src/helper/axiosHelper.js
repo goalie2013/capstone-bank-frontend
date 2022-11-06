@@ -24,7 +24,7 @@ export function axiosLogin(userObj, user, navigate) {
     .catch((err) => console.error("axios ERROR", err.message));
 }
 
-export function authorizeUserTokens(
+export function axiosAuthorizeUserTokens(
   user,
   token,
   setJwt,
@@ -89,4 +89,4 @@ function getNewAccessToken(refreshToken, setJwt, setShowModal, logout) {
     });
 }
 
-export default { axiosLogin, authorizeUserTokens };
+export default { axiosLogin, axiosAuthorizeUserTokens };

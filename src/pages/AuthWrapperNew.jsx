@@ -11,9 +11,7 @@ import PageNotFound from "../components/PageNotFound";
 import { UserContext } from "../index";
 import { useParams } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
-// import { siteAuth } from "../helper/authHelper";
-// import { logout } from "../components/NavBar";
-import { authorizeUserTokens } from "../helper/axiosHelper";
+import { axiosAuthorizeUserTokens } from "../helper/axiosHelper";
 import Loading from "../components/Loading";
 import { QueryGetUserByEmail } from "../helper/queryMutationHelper";
 
@@ -70,7 +68,7 @@ export default function AuthWrapperNew({ pageComponent }) {
     const token = localStorage.getItem("token");
     console.log("token from localStorage", token);
 
-    authorizeUserTokens(
+    axiosAuthorizeUserTokens(
       ctx.user,
       token,
       setJwtValid,

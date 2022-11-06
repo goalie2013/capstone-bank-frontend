@@ -25,7 +25,17 @@ body {
 .link:hover {
   text-decoration: underline;
 }
-
+@media all and (max-width: 767px) {
+  .loginOutBtn {
+    background: #fcf6f5ff;
+    color: #89abe3ff;
+    font-weight: 800;
+    box-shadow: "0 0.2rem 0.75rem rgba(0, 0, 0, 0.3)";
+    margin-top: 1rem;
+    margin-left: 0rem !important;
+    width: 25%;
+  }
+}
 @media all and (max-width: 655px) {
   .page-wrapper {
     /* width: 100%; */
@@ -38,16 +48,6 @@ body {
     justify-content: flex-start;
     align-items: center;
     z-index: 2;
-  }
-
-  .loginOutBtn {
-    background: #fcf6f5ff;
-    color: #89abe3ff;
-    font-weight: 800;
-    box-shadow: "0 0.2rem 0.75rem rgba(0, 0, 0, 0.3)";
-    margin-top: 1rem;
-    margin-left: 0rem !important;
-    width: 25%;
   }
 
   .home-title {

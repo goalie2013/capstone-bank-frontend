@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useContext } from "react";
 import Transaction from "../components/Transaction";
 import CustomCard from "../components/Card";
 import { COLORS } from "../themes";
@@ -10,9 +10,8 @@ import { MdOutlineAttachMoney } from "react-icons/md";
 import NotAuthorized from "../components/NotAuthorized";
 import Loading from "../components/Loading";
 
-export default function UserData({ token, userId, userEmail }) {
+export default function UserData({ userId, userEmail }) {
   console.count(" --- UserData ---");
-  const [showLoading, setShowLoading] = useState(false);
   let { id: paramId } = useParams();
   let userName, balance, transactions, transactionsEl;
   const ctx = useContext(UserContext);
@@ -60,13 +59,13 @@ export default function UserData({ token, userId, userEmail }) {
     }
   }
 
-  // const nameLower = userName.toLowerCase();
+  const nameLower = userName.toLowerCase();
+  // const nameCapitalized = nameLower[0].toUpperCase() + nameLower.slice(1);
+
   const words = userName.split(" ");
   const nameCapitalized = words
     .map((word) => word[0].toUpperCase() + word.substring(1))
     .join(" ");
-
-  // const nameCapitalized = nameLower[0].toUpperCase() + nameLower.slice(1);
 
   return (
     <>
