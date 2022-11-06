@@ -1,45 +1,31 @@
 import React, { useState, useEffect, useContext } from "react";
-import { useQuery } from "@apollo/client";
-import { GET_USER_BY_EMAIL } from "../queries/userQueries";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { app } from "../firebase";
 import { getAuth, onAuthStateChanged } from "firebase/auth";
-import { useParams } from "react-router-dom";
 import { UserContext } from "../index";
-
-import NavBar from "./NavBar";
 import NotAuthorized from "./NotAuthorized";
 import { QueryGetUserByEmail } from "../helper/queryMutationHelper";
-import axios from "axios";
+import { axiosLogin } from "../helper/axiosHelper";
 import Loading from "./Loading";
 
 // Need a LoginStep bc Query functions for GraphQL run right away, so create issues in Login component.
-// Also can retrieve id from DB for Google Login
-export default function LoginStep({ email, password }) {
+// Get User Info from Email Query --> Get New Access & Refresh Tokens -> Navigate to Deposit
+export default function LoginStep({ email }) {
   console.log("---LOGINSTEP---");
   const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
   const ctx = useContext(UserContext);
   const firebaseAuth = getAuth(app);
-  // const { email } = useParams();
+  const paramEmail = useParams();
   let id;
   let userData;
-  let token = localStorage.getItem("token") || "";
-
-  // const { loading, error, data } = useQuery(GET_USER_BY_EMAIL, {
-  //   variables: { email },
-  //   // pollInterval: 1000,
-  // });
-  // if (loading) console.warn("Loading", loading);
+  const userEmail = email ? email : paramEmail;
 
   useEffect(() => {
     onAuthStateChanged(firebaseAuth, (user) => {
       console.log("firebase auth state changed");
       console.log("user", user);
       if (user) {
-        // console.log("token", token);
-        // if (token) localStorage.removeItem("token");
-        // localStorage.setItem("token", token);
         ctx.user = { email: user.email };
       } else {
         navigate("/");
@@ -47,47 +33,8 @@ export default function LoginStep({ email, password }) {
     });
   }, []);
 
-  useEffect(() => {
-    if (userData) {
-      ctx.user.id = userData.id;
-      // if (token && data.getUserByEmail.id) {
-      //   console.log("navigate to Deposit..");
-      //   navigate(`/deposit/${data.getUserByEmail.id}`);
-      // } else if (!token) {
-      //   console.log("NO TOKEN");
-      //   return <NotAuthorized />;
-      // }
-      const userObj = {
-        id: userData.id,
-        name: userData.name,
-        email: userData.email,
-      };
-      console.log("axios call", userObj);
-      axios
-        .post("https://betterbank.herokuapp.com/login", userObj)
-        .then((response) => {
-          console.log("axios response", response);
-          console.log("axios response", response.data.accessToken);
-
-          // Reset context if user already created bc don't want id bug
-          ctx.user = {};
-          ctx.user = { ...userObj };
-
-          // Reset localStorage token in case not empty, then add new token
-          localStorage.removeItem("token");
-          localStorage.setItem("token", response.data.accessToken);
-        })
-        .then(() => {
-          navigate(`/deposit/${userObj.id}`);
-        })
-        .catch((err) => console.error("axios ERROR", err.message));
-    } else {
-      console.log("NO DATA");
-    }
-  });
-
   try {
-    let { user, loading } = QueryGetUserByEmail(email);
+    let { user, loading } = QueryGetUserByEmail(userEmail);
     if (loading) return <Loading />;
     userData = user;
 
@@ -106,6 +53,20 @@ export default function LoginStep({ email, password }) {
     }
   }
 
+  if (userData) {
+    const userObj = {
+      id: userData.id,
+      name: userData.name,
+      email: userData.email,
+    };
+
+    // Go to server /login to get Access & Refresh Tokens
+    console.log("axios call", userObj);
+    axiosLogin(userObj, ctx.user, navigate);
+  } else {
+    console.log("NO DATA");
+  }
+
   return (
     <>
       {showModal ? (
@@ -113,23 +74,18 @@ export default function LoginStep({ email, password }) {
           <NotAuthorized id={id} />
         </>
       ) : (
-        //TODO:
-        // <NotAuthorized />
-        <>
-          {/* <NavBar id={id} /> */}
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ minHeight: "100vh" }}
+        >
           <div
-            className="d-flex justify-content-center align-items-center"
-            style={{ minHeight: "100vh" }}
+            className="spinner-border text-primary"
+            style={{ width: "3rem", height: "3rem" }}
+            role="status"
           >
-            <div
-              className="spinner-border text-primary"
-              style={{ width: "3rem", height: "3rem" }}
-              role="status"
-            >
-              <span className="sr-only"></span>
-            </div>
+            <span className="sr-only"></span>
           </div>
-        </>
+        </div>
       )}
     </>
   );

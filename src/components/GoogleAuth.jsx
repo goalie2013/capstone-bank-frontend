@@ -2,17 +2,19 @@ import React, { useState, useContext } from "react";
 import { Button, Form } from "react-bootstrap";
 import { UserContext } from "../index";
 import { useNavigate } from "react-router-dom";
-import { useMutation } from "@apollo/client";
-import { CREATE_USER } from "../mutations/userMutations";
 import { GoogleAuthProvider, getAuth, signInWithPopup } from "firebase/auth";
 import { app } from "../firebase";
 import googleLogo from "../assets/google-logo.png";
 import { COLORS } from "../themes";
 import { QueryGetUserByEmail } from "../helper/queryMutationHelper";
+import { useMutation } from "@apollo/client";
+import { CREATE_USER } from "../mutations/userMutations";
+import { axiosLogin } from "../helper/axiosHelper";
 
-export default function GoogleAuthCreateUser() {
-  const ctx = useContext(UserContext);
+export default function GoogleAuth({ setShow, setStatus }) {
   const [userEmail, setUserEmail] = useState("");
+  const ctx = useContext(UserContext);
+  const navigate = useNavigate();
   const auth = getAuth(app);
   auth.languageCode = "it";
 
@@ -21,66 +23,65 @@ export default function GoogleAuthCreateUser() {
     "login_hint": "user@example.com",
   });
 
-  const navigate = useNavigate();
-
-  const emailExists = QueryGetUserByEmail(userEmail);
-  console.log("emailExists", emailExists);
-  if (emailExists && emailExists.getUserByEmail) {
-    console.log("EMAIL ALREADY EXISTSSSS");
-    const { getUserByEmail } = emailExists;
-    const { id } = getUserByEmail;
-    navigate(`/deposit/${id}`);
+  try {
+    const { user } = QueryGetUserByEmail(userEmail);
+    if (user) {
+      console.log("User already exists");
+      navigate(`/login-success/${userEmail}`);
+    }
+  } catch (err) {
+    console.error("QueryGetUserByEmail Error:", err.message);
+    setStatus("Google Sign In Error");
   }
 
-  // const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
-  // if (error) console.error("Apollo Error", error);
-  // if (loading) console.log("LOADING");
-  // if (data) {
-  //   console.log("DATA PRESENT!!", data);
-  //   if (!emailExists) {
-  //     ctx.user.email = userEmail;
-  //     navigate(`/deposit/${data.createUser.id}`);
-  //   }
-  // } else {
-  //   console.log("NO DATA");
-  // }
+  const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
+  if (loading) return;
+  if (error) {
+    console.error("createUser Error", error);
+    return false;
+  }
+  if (data && data.createUser) {
+    console.log("DATA PRESENT!!", data);
+    const newUser = data.createUser;
+    console.log("axios /login call");
+    axiosLogin(newUser, ctx.user, navigate);
+  } else {
+    console.log("NO DATA");
+  }
 
   function handleGoogleAuth() {
     signInWithPopup(auth, provider)
       .then((result) => {
         // This gives you a Google Access Token. You can use it to access the Google API.
         const credential = GoogleAuthProvider.credentialFromResult(result);
-        const token = credential.accessToken;
+        // const token = credential.accessToken;
         // The signed-in user info.
         const user = result.user;
         console.log("Google user", user);
-        console.log("name", user.displayName);
         const name = user.displayName;
         const email = user.email;
 
         ctx.user = { name, email };
-        navigate(`/login-success/${user.email}`);
+        setUserEmail(email);
 
-        // setUserEmail(email);
-
-        // try {
-        //   setTimeout(() => {
-        //     createUser({ variables: { user: { name, email } } }, 2000);
-        //   });
-        // } catch (err) {
-        //   console.error("createUser Error", err.message);
-        // }
+        // Create User into Database
+        try {
+          console.log("createUser()");
+          createUser({ variables: { user: { name, email } } });
+        } catch (err) {
+          console.error("createUser Error", err.message);
+        }
+        setShow(false);
       })
       .catch((error) => {
         // Handle Errors here.
         const errorCode = error.code;
         const errorMessage = error.message;
-        // The email of the user's account used.
-        const emailErr = error.customData.email;
         // The AuthCredential type that was used.
         const credential = GoogleAuthProvider.credentialFromError(error);
 
         console.error("Google SignIn Error", errorMessage);
+        setStatus("Google Sign In Error");
       });
   }
 

@@ -1,20 +1,18 @@
 import React, { useState, useContext } from "react";
-import NavBar from "../components/NavBar";
 import SubmitBtn from "../components/SubmitBtn";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
 import CustomCard from "../components/Card";
 import { UserContext } from "../index";
-// import validator from "validator";
 import { validate } from "../helper/userFormsHelper";
-import axios from "axios";
+import { axiosLogin } from "../helper/axiosHelper";
 import { COLORS } from "../themes";
 import { useMutation } from "@apollo/client";
 import { CREATE_USER } from "../mutations/userMutations";
 import { Link, useNavigate } from "react-router-dom";
 import { app } from "../firebase";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
-import GoogleAuthCreateUser from "../components/GoogleAuth";
+import GoogleAuth from "../components/GoogleAuth";
 import Loading from "../components/Loading";
 
 export default function CreateAccount() {
@@ -31,7 +29,7 @@ export default function CreateAccount() {
   const navigate = useNavigate();
   const firebaseAuth = getAuth(app);
   let id;
-  ctx.user.id ? (id = ctx.user.id) : (id = "bad-request");
+  ctx.user.id ? (id = ctx.user.id) : (id = "");
 
   const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
   if (error) {
@@ -42,37 +40,11 @@ export default function CreateAccount() {
   if (data && data.createUser) {
     console.log("DATA PRESENT!!", data);
     const newUser = data.createUser;
+    console.log("newUser", newUser);
 
     // Get & Store JWT Token
-    const userObj = {
-      id: newUser.id,
-      name: newUser.name,
-      email: newUser.email,
-    };
-
-    console.log("axios call", userObj);
-    axios
-      .post("https://betterbank.herokuapp.com/login", userObj)
-      .then((response) => {
-        console.log("axios response", response);
-        console.log("axios response access token", response.data.accessToken);
-
-        // Reset context if user already created bc don't want id bug
-        ctx.user = {};
-        ctx.user = { ...userObj };
-
-        // Reset localStorage token in case not empty, then add new token
-        // localStorage.setItem("token", "");
-        // if (localStorage.getItem("token") ) localStorage.removeItem("token");
-        localStorage.removeItem("token");
-        localStorage.setItem("token", response.data.accessToken);
-        localStorage.removeItem("refresh token");
-        localStorage.setItem("refresh token", response.data.refreshToken);
-      })
-      .then(() => {
-        navigate(`/deposit/${newUser.id}`);
-      })
-      .catch((err) => console.error("axios ERROR", err.message));
+    console.log("axios /login call");
+    axiosLogin(newUser, ctx.user, navigate);
   } else {
     console.log("NO DATA");
   }
@@ -208,7 +180,7 @@ export default function CreateAccount() {
                       handleClick={handleCreate}
                     />
                   </Form>
-                  <GoogleAuthCreateUser />
+                  <GoogleAuth setShow={setShow} setStatus={setStatus} />
                 </Card.Body>
               </>
             ) : (
@@ -232,60 +204,4 @@ export default function CreateAccount() {
 //   setEmail("");
 //   setPassword("");
 //   setShow(true);
-// }
-
-// function validate(field, label) {
-//   console.log("---- validate ----");
-
-//   if (!field) {
-//     // setStatusTextColor("red");
-//     setStatus(
-//       `Error: ${
-//         label[0].toUpperCase() + label.substring(1)
-//       } must be filled out`
-//     );
-//     return false;
-//   }
-
-//   // Name Validation (No special characters or numbers)
-//   if (field === name && !validator.matches(field, /[a-zA-Z ]+$/)) {
-//     // setStatusTextColor("red");
-//     setNameTxtColor("red");
-//     setStatus("Name must only contain letters");
-//     return false;
-//   } else {
-//     // setStatusTextColor("");
-//     setNameTxtColor("black");
-//   }
-
-//   // Email Validation
-//   if (field === email && !validator.isEmail(field)) {
-//     console.log("EMAIL VALIDATION");
-//     // setStatusTextColor("red");
-//     setEmailTxtColor("red");
-//     setStatus("Email not valid. Try Again");
-//     return false;
-//   } else {
-//     // setStatusTextColor("");
-//     setEmailTxtColor("black");
-//   }
-
-//   // Password Length Validation
-//   if (field === password && field.length < 8) {
-//     console.log("XDDDDXDXXDXDXD");
-//     // setStatusTextColor("red");
-//     setPassTxtColor("red");
-//     setStatus("Password must be at least 8 characters");
-//     // document.documentElement.style.setProperty("--password-txt-color", "red");
-//     return false;
-//   } else {
-//     // setStatusTextColor("");
-//     setPassTxtColor("gray");
-//   }
-
-//   // If Validation Passed:
-//   // in case already present from previous validation fail:
-//   setStatus("");
-//   // document.documentElement.style.setProperty("--password-txt-color", "gray");
-//   return true;
 // }

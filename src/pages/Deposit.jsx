@@ -1,11 +1,10 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import SubmitBtn from "../components/SubmitBtn";
 import CustomCard from "../components/Card";
 import Form from "react-bootstrap/Form";
 import { UserContext } from "../index";
 import PageNotFound from "../components/PageNotFound";
-import { handleChange } from "../helper/handleHelper";
-import Base64Downloader from "react-base64-downloader";
+import { handleChange, downloadScreenshot } from "../helper/handleHelper";
 import {
   QueryGetUser,
   MutationUpdateUser,
@@ -15,37 +14,50 @@ import dayjs from "dayjs";
 import { COLORS } from "../themes";
 import { useParams } from "react-router-dom";
 import NotAuthorized from "../components/NotAuthorized";
-import axios from "axios";
-import { Button } from "react-bootstrap";
+import html2canvas from "html2canvas";
+import Loading from "../components/Loading";
 
 // ** If grabbing value from onChange on each keychange, use ref OR e.target.value; NOT depositValue
 // ** setState won't update until next render, so messes up disabled/abled button
-function arrayBufferToBase64(buffer) {
-  var binary = "";
-  var bytes = [].slice.call(new Uint8Array(buffer));
-  bytes.forEach((b) => (binary += String.fromCharCode(b)));
-  return window.btoa(binary);
-}
+
 export default function Deposit({ userId, userEmail }) {
   console.log("----- DEPOSIT -----");
   // const ref = useRef(null);
   const [showSubmit, setShowSubmit] = useState(false);
   const [status, setStatus] = useState("");
-  const [switchState, setSwitchState] = useState(false);
+  const [switchState, setSwitchState] = useState(
+    localStorage.getItem("auto-screenshot") === true ? true : false
+  );
   const [showDownload, setDownload] = useState(false);
+  const [timestamp, setTimestamp] = useState("");
   const [depositValue, setDepositValue] = useState("");
   const [textColor, setTextColor] = useState("");
   const { id: paramId } = useParams();
   const ctx = useContext(UserContext);
-  console.log("ctx", ctx);
 
-  let balance, transactions, base64, screenshot, imgStr;
+  let balance, transactions, uri, base64;
 
   if (ctx.user && !ctx.user.id) ctx.user.id = userId;
 
   // Check if userId matches url parameter; if NOT --> Not Authorized
   console.log("USER ID", userId);
   console.log("PARAM ID", paramId);
+
+  useEffect(() => {
+    // Download Screenshot
+    if (showDownload && timestamp) {
+      html2canvas(document.body).then((canvas) => {
+        document.body.appendChild(canvas);
+        uri = canvas.toDataURL();
+        console.log("uri", uri);
+        downloadScreenshot("Deposit", timestamp, uri);
+
+        // setShowSubmit(false);
+        // setDepositValue("");
+      });
+    }
+  }, [showDownload]);
+
   if (userId !== paramId) return <NotAuthorized id={userId} />;
 
   // Update User using GraphQL Mutation
@@ -54,6 +66,7 @@ export default function Deposit({ userId, userEmail }) {
   // Get User Query: Retrieve Balance & Transactions
   try {
     let { loading, currentBalance, xTransactions } = QueryGetUser(userId);
+    if (loading) return <Loading />;
     balance = currentBalance;
     transactions = xTransactions;
   } catch (err) {
@@ -91,52 +104,17 @@ export default function Deposit({ userId, userEmail }) {
       });
     } catch (err) {
       console.error("Deposit updateUser Error", err.message);
+      setTextColor("red");
+      setStatus("Transaction Error. Please Try Again");
     }
 
+    setTimestamp(timeStamp);
     setTextColor(COLORS.transactionComplete);
     setStatus("Deposit Complete!");
 
     if (switchState) {
       console.log("take screenshot");
-
-      axios
-        //https://betterbank.herokuapp.com/screenshot
-        .get("http://localhost:5050/screenshot", {
-          params: {
-            date: timeStamp,
-            type: "Deposit",
-            id: userId,
-          },
-          // responseType: "arraybuffer",
-        })
-        .then((result) => {
-          console.log("screenshot done", result);
-          // if (!fs.existsSync("screenshots")) fs.mkdirSync("screenshots");
-          // const buffer = Buffer.from(result.data, "screenshot");
-          screenshot = result.data;
-
-          imgStr = arrayBufferToBase64(result.data);
-          base64 = `data:image/jpeg;base64,${result.data}`;
-          // base64 = imgStr;
-          console.log(base64);
-          const linkSource = `data:image/jpeg;base64,${base64}`;
-          const downloadLink = document.createElement("a");
-          const fileName = "vct_illustration.jpeg";
-
-          downloadLink.href = linkSource;
-          downloadLink.download = fileName;
-          downloadLink.click();
-
-          setDownload(true);
-
-          setTextColor(COLORS.transactionComplete);
-          setStatus("Screenshot Complete");
-        })
-        .catch((err) => {
-          console.error("screenshot Error", err.message);
-          setTextColor("red");
-          setStatus("Could not complete Screenshot");
-        });
+      setDownload(true);
     }
 
     setShowSubmit(false);
@@ -153,6 +131,7 @@ export default function Deposit({ userId, userEmail }) {
             top: "125px",
             left: "75px",
             margin: "0 auto",
+            zIndex: "20",
           }}
         >
           <Form.Check
@@ -160,12 +139,16 @@ export default function Deposit({ userId, userEmail }) {
             id="snapshot-switch"
             label="Snapshot of Transaction"
             defaultChecked={switchState}
-            onChange={() => setSwitchState((prevVal) => !prevVal)}
+            onChange={() => {
+              localStorage.setItem("auto-snp", !switchState);
+              setSwitchState((prevVal) => !prevVal);
+            }}
           />
         </Form>
         <h1>Deposit</h1>
 
         <CustomCard
+          id="#deposit-card"
           bgHeaderColor={COLORS.darkerTheme}
           header="Deposit Into Account"
           bgColor={COLORS.cardBodyBg}
@@ -214,32 +197,6 @@ export default function Deposit({ userId, userEmail }) {
             </Form>
           }
         />
-
-        {showDownload ? (
-          <>
-            <Base64Downloader base64={imgStr} downloadName="1x1_red_pixel">
-              Click to download
-            </Base64Downloader>
-            {/* <img src={URL.createObjectURL(baseArr[0])} /> */}
-            <Button
-              onClick={() => {
-                // const byteChars = btoa(base64);
-                const fileUrl = URL.createObjectURL(
-                  new Blob([screenshot], { type: "mimeType" })
-                );
-                let alink = document.createElement("a");
-                alink.href = { base64 };
-                alink.download = "SamplePDF.jpeg";
-                alink.click();
-              }}
-            >
-              Download
-            </Button>
-            <img src={base64} />
-          </>
-        ) : (
-          <></>
-        )}
       </div>
     </>
   );

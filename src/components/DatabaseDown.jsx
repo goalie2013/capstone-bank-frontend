@@ -31,6 +31,8 @@ export default function DatabaseDown() {
           Service Unavailable
         </h1>
         <hr />
+        <h3>Try Reloading Page</h3>
+        <hr />
         <h3>
           Go to{" "}
           <Link to="/" style={{}}>

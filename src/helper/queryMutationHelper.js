@@ -16,8 +16,6 @@ export function QueryGetUser(id) {
 
   if (loading) {
     console.log("--LOADING--");
-    // return <h1>LOADING...</h1>;
-    // throw new Error("Loading");
     return { loading };
   }
   if (error) {

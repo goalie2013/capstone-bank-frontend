@@ -55,7 +55,7 @@ export default function NavBar() {
   }, [firebaseAuth.currentUser]);
 
   try {
-    let { user, loading } = QueryGetUserByEmail(email);
+    let { user } = QueryGetUserByEmail(email);
 
     console.log("USER DATA", user);
 

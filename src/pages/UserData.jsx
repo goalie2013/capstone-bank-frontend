@@ -1,5 +1,4 @@
 import React, { useState, useContext } from "react";
-import NavBar from "../components/NavBar";
 import Transaction from "../components/Transaction";
 import CustomCard from "../components/Card";
 import { COLORS } from "../themes";
@@ -9,6 +8,7 @@ import { UserContext } from "../index";
 import PageNotFound from "../components/PageNotFound";
 import { MdOutlineAttachMoney } from "react-icons/md";
 import NotAuthorized from "../components/NotAuthorized";
+import Loading from "../components/Loading";
 
 export default function UserData({ token, userId, userEmail }) {
   console.count(" --- UserData ---");
@@ -22,14 +22,22 @@ export default function UserData({ token, userId, userEmail }) {
   try {
     const { loading, name, currentBalance, xTransactions } =
       QueryGetUser(userId);
-    console.log("loading", loading);
-    if (loading) setShowLoading(true);
-
+    if (loading) return <Loading />;
     userName = name;
     balance = currentBalance;
     transactions = xTransactions;
   } catch (err) {
-    // if (err.message == "Loading") return <h1>Loading...</h1>;
+    console.error("ERRORROROROROR", err.message);
+
+    if (err.message == "Data is null") {
+      console.error("DATA IS NULL");
+      // setShowPage(false);
+      return <PageNotFound id={paramId} />;
+    } else if (err.message == "Error getting User Data") {
+      return (
+        <h1 style={{ color: "red" }}>ERROR GETTING USER DATA: {err.message}</h1>
+      );
+    }
   }
 
   // Check if userId matches url parameter; if NOT --> Not Authorized

@@ -1,11 +1,11 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import CustomCard from "../components/Card";
 import Form from "react-bootstrap/Form";
 import SubmitBtn from "../components/SubmitBtn";
 import { UserContext } from "../index";
 import PageNotFound from "../components/PageNotFound";
 import NotAuthorized from "../components/NotAuthorized";
-import { handleChange } from "../helper/handleHelper";
+import { handleChange, downloadScreenshot } from "../helper/handleHelper";
 import {
   QueryGetUser,
   MutationUpdateUser,
@@ -14,6 +14,8 @@ import {
 import dayjs from "dayjs";
 import { COLORS } from "../themes";
 import { useParams } from "react-router-dom";
+import html2canvas from "html2canvas";
+import Loading from "../components/Loading";
 
 export default function Withdraw({ token, userId, userEmail }) {
   console.log("----- WITHDRAW -----");
@@ -21,41 +23,44 @@ export default function Withdraw({ token, userId, userEmail }) {
   const [status, setStatus] = useState("");
   const [withdrawValue, setWithdrawValue] = useState("");
   const [textColor, setTextColor] = useState("");
+  const [switchState, setSwitchState] = useState(
+    localStorage.getItem("auto-screenshot") === true ? true : false
+  );
+  const [showDownload, setDownload] = useState(false);
+  const [timestamp, setTimestamp] = useState("");
   const { id: paramId } = useParams();
-  let balance, transactions;
+  let balance, transactions, uri;
   const ctx = useContext(UserContext);
-  console.log("ctx", ctx);
 
   if (ctx.user && !ctx.user.id) ctx.user.id = userId;
 
-  // useEffect(() => {
-  //   if (token) fetchData(token);
-  // }, [token]);
+  useEffect(() => {
+    // Download Screenshot
+    if (showDownload && timestamp) {
+      html2canvas(document.body).then((canvas) => {
+        document.body.appendChild(canvas);
+        uri = canvas.toDataURL();
+        console.log("uri", uri);
+        downloadScreenshot("Withdraw", timestamp, uri);
 
-  // const fetchData = async (token) => {
-  //   console.log("fetchData token", token);
-  //   const result = await axios.get(
-  //     "https://betterbank.herokuapp.com/api/todos",
-  //     {
-  //       headers: {
-  //         Authorization: `Bearer + ${token}`,
-  //       },
-  //     }
-  //   );
-  //   console.log(result.data);
-  // };
+        // setShowSubmit(false);
+        // setWithdrawValue("");
+      });
+    }
+  }, [showDownload]);
+
+  // Update User Mutation
+  const updateUser = MutationUpdateUser(userId, userEmail);
 
   // Check if userId matches url parameter; if NOT --> Not Authorized
   console.log("USER ID", userId);
   console.log("PARAM ID", paramId);
   if (userId !== paramId) return <NotAuthorized id={userId} />;
 
-  // Update User Mutation
-  const updateUser = MutationUpdateUser(userId, userEmail);
-
   // Get User Query
   try {
-    let { currentBalance, xTransactions } = QueryGetUser(userId);
+    let { loading, currentBalance, xTransactions } = QueryGetUser(userId);
+    if (loading) return <Loading />;
     balance = currentBalance;
     transactions = xTransactions;
   } catch (err) {
@@ -75,6 +80,7 @@ export default function Withdraw({ token, userId, userEmail }) {
   function handleWithdraw() {
     console.log("-- handleWithdraw --");
     console.log("withdrawValue", withdrawValue, typeof withdrawValue);
+    const timeStamp = dayjs().format("MM/DD/YYYY HH:mm:ss");
 
     // Do NOT have to caste withdrawValue to int. Works bc JS internally converts a subtraction to a number
     // DOES NOT WORK FOR ADDITION
@@ -90,7 +96,7 @@ export default function Withdraw({ token, userId, userEmail }) {
       ...transactions,
       {
         info: `Withdraw $${withdrawValue}`,
-        timeStamp: dayjs().format("MM/DD/YYYY HH:mm:ss"),
+        timeStamp,
       },
     ];
 
@@ -100,10 +106,19 @@ export default function Withdraw({ token, userId, userEmail }) {
       });
     } catch (err) {
       console.error("Withdraw updateUser Error", err.message);
+      setTextColor("red");
+      setStatus("Transaction Error. Please Try Again");
     }
 
+    setTimestamp(timeStamp);
     setTextColor(COLORS.transactionComplete);
     setStatus("Withdraw Complete!");
+
+    if (switchState) {
+      console.log("take screenshot");
+      setDownload(true);
+    }
+
     setShowSubmit(false);
     setWithdrawValue("");
   }
@@ -112,6 +127,26 @@ export default function Withdraw({ token, userId, userEmail }) {
     <>
       {/* <NavBar id={userId} /> */}
       <div className="page-wrapper">
+        <Form
+          style={{
+            position: "absolute",
+            top: "125px",
+            left: "75px",
+            margin: "0 auto",
+            zIndex: "20",
+          }}
+        >
+          <Form.Check
+            type="switch"
+            id="snapshot-switch"
+            label="Snapshot of Transaction"
+            defaultChecked={switchState}
+            onChange={() => {
+              localStorage.setItem("auto-snp", !switchState);
+              setSwitchState((prevVal) => !prevVal);
+            }}
+          />
+        </Form>
         <h1>Withdraw</h1>
         <CustomCard
           bgHeaderColor={COLORS.darkerTheme}

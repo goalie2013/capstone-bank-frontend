@@ -1,5 +1,4 @@
 import React, { useState, useContext } from "react";
-import NavBar from "../components/NavBar";
 import SubmitBtn from "../components/SubmitBtn";
 import Card from "react-bootstrap/Card";
 import Form from "react-bootstrap/Form";
@@ -9,7 +8,7 @@ import { validate } from "../helper/userFormsHelper";
 import { Link, useNavigate } from "react-router-dom";
 import { app } from "../firebase";
 import { getAuth, signInWithEmailAndPassword } from "firebase/auth";
-import GoogleSignIn from "../components/GoogleSignIn";
+import GoogleAuth from "../components/GoogleAuth";
 import LoginStep from "../components/LoginStep";
 
 export default function Login() {
@@ -60,11 +59,8 @@ export default function Login() {
         const user = userCredential.user;
         console.log("Logged In User", user);
 
-        // navigate(`/login-success/${user.email}`);
-        // return <LoginStep email={user.email} password={password} />;
-        setLoginStep(false);
-
         // setShow(false);
+        setLoginStep(false);
       })
       .catch((err) => {
         console.error("Error loggin in user", err.message);
@@ -148,7 +144,7 @@ export default function Login() {
 
                     <SubmitBtn name="Log In" handleClick={handleLogin} />
                   </Form>
-                  <GoogleSignIn />
+                  <GoogleAuth />
                 </Card.Body>
               </>
             ) : (
@@ -165,6 +161,6 @@ export default function Login() {
       </div>
     </>
   ) : (
-    <LoginStep email={email} password={password} />
+    <LoginStep email={email} />
   );
 }

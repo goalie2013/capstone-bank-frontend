@@ -53,6 +53,7 @@ export default function DeleteAccount({ user }) {
     }
     localStorage.removeItem("token");
     localStorage.removeItem("refresh token");
+    ctx.user = {};
     navigate("/");
   }
   return (
