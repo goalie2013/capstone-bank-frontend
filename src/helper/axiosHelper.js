@@ -34,8 +34,7 @@ export function authorizeUserTokens(
 ) {
   console.log("authorizeUserTokens FUNCTION");
   axios
-    // https://betterbank.herokuapp.com/authorize
-    .post("http://localhost:5050/authorize", user, {
+    .post("https://betterbank.herokuapp.com/authorize", user, {
       headers: {
         "Authorization": `Bearer ${token}`,
       },
@@ -75,8 +74,7 @@ export function authorizeUserTokens(
 
 function getNewAccessToken(refreshToken, setJwt, setShowModal, logout) {
   axios
-    // https://betterbank.herokuapp.com/newtoken
-    .post("http://localhost:5050/newaccesstoken", {
+    .post("https://betterbank.herokuapp.com/newaccesstoken", {
       token: refreshToken,
     })
     .then((response) => {
