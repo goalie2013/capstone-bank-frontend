@@ -13,8 +13,14 @@ import { axiosLogin } from "../helper/axiosHelper";
 import Loading from "./Loading";
 import LoginStep from "./LoginStep";
 
-export default function GoogleAuth({ createUser, setShow, setStatus }) {
+export default function GoogleAuth({
+  createUser,
+  setShow,
+  setStatus,
+  setUserCreated,
+}) {
   const [userEmail, setUserEmail] = useState("");
+  const [userCreated, setUserCreated] = useState(false);
   const ctx = useContext(UserContext);
   const navigate = useNavigate();
   const auth = getAuth(app);
@@ -64,7 +70,7 @@ export default function GoogleAuth({ createUser, setShow, setStatus }) {
         const email = user.email;
 
         ctx.user = { name, email };
-        // setUserEmail(email);
+        setUserEmail(email);
 
         // Create User into Database
         try {
@@ -74,8 +80,10 @@ export default function GoogleAuth({ createUser, setShow, setStatus }) {
           console.error("createUser Error", err.message);
         }
         // return <LoginStep email={email} />;
-        navigate(`/login-success/${email}`);
-        setShow(false);
+        // setUserCreated(true);
+        // setShow(false);
+        console.log("after createUser");
+        setUserCreated(true);
       })
       .catch((error) => {
         // Handle Errors here.
@@ -90,37 +98,43 @@ export default function GoogleAuth({ createUser, setShow, setStatus }) {
   }
 
   return (
-    <Form onSubmit={(e) => e.preventDefault()}>
-      <div style={{ display: "flex", justifyContent: "center" }}>
-        <Button
-          className="btn-light"
-          style={{
-            width: "19rem",
-            placeItems: "center",
-            borderRadius: "20px",
-            marginTop: "1rem",
-            backgroundColor: COLORS.darkerTheme,
-          }}
-          onClick={handleGoogleAuth}
-        >
-          <span
-            style={{
-              display: "flex",
-              flexDirection: "row",
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-          >
-            <img
-              src={googleLogo}
-              className="img-fluid btn-light"
-              alt="Google Logo"
-              style={{ width: "3rem", marginRight: "0.8rem" }}
-            />
-            <span style={{ color: COLORS.lighterTheme }}>Sign Up</span>
-          </span>
-        </Button>
-      </div>
-    </Form>
+    <>
+      {userCreated ? (
+        <Form onSubmit={(e) => e.preventDefault()}>
+          <div style={{ display: "flex", justifyContent: "center" }}>
+            <Button
+              className="btn-light"
+              style={{
+                width: "19rem",
+                placeItems: "center",
+                borderRadius: "20px",
+                marginTop: "1rem",
+                backgroundColor: COLORS.darkerTheme,
+              }}
+              onClick={handleGoogleAuth}
+            >
+              <span
+                style={{
+                  display: "flex",
+                  flexDirection: "row",
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
+                <img
+                  src={googleLogo}
+                  className="img-fluid btn-light"
+                  alt="Google Logo"
+                  style={{ width: "3rem", marginRight: "0.8rem" }}
+                />
+                <span style={{ color: COLORS.lighterTheme }}>Sign Up</span>
+              </span>
+            </Button>
+          </div>
+        </Form>
+      ) : (
+        <LoginStep email={userEmail} />
+      )}
+    </>
   );
 }

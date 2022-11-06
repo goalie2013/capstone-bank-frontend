@@ -14,6 +14,7 @@ import { app } from "../firebase";
 import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import GoogleAuth from "../components/GoogleAuth";
 import Loading from "../components/Loading";
+import LoginStep from "../components/LoginStep";
 
 export default function CreateAccount() {
   const [show, setShow] = useState(true);
@@ -25,6 +26,7 @@ export default function CreateAccount() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [userCreated, setUserCreated] = useState(false);
   const ctx = useContext(UserContext);
   const navigate = useNavigate();
   const firebaseAuth = getAuth(app);
@@ -120,81 +122,87 @@ export default function CreateAccount() {
           statusText={status}
           statusColor={COLORS.modalHeader}
           body={
-            show ? (
-              <>
-                <Card.Body>
-                  <Form className="form" onSubmit={(e) => e.preventDefault()}>
-                    <Form.Group className="mb-4" controlId="formName">
-                      {/* <Form.Label>Name</Form.Label> */}
-                      <Form.Control
-                        style={nameStyles}
-                        required
-                        type="text"
-                        placeholder="Name"
-                        value={name}
-                        onChange={(e) => {
-                          setName(e.currentTarget.value);
-                          setNameTxtColor("black");
-                          setStatus("");
-                        }}
-                      />
-                    </Form.Group>
+            userCreated ? (
+              show ? (
+                <>
+                  <Card.Body>
+                    <Form className="form" onSubmit={(e) => e.preventDefault()}>
+                      <Form.Group className="mb-4" controlId="formName">
+                        {/* <Form.Label>Name</Form.Label> */}
+                        <Form.Control
+                          style={nameStyles}
+                          required
+                          type="text"
+                          placeholder="Name"
+                          value={name}
+                          onChange={(e) => {
+                            setName(e.currentTarget.value);
+                            setNameTxtColor("black");
+                            setStatus("");
+                          }}
+                        />
+                      </Form.Group>
 
-                    <Form.Group className="mb-4" controlId="formEmail">
-                      <Form.Control
-                        style={emailStyles}
-                        required
-                        type="email"
-                        placeholder="Email"
-                        value={email}
-                        onChange={(e) => {
-                          setEmail(e.currentTarget.value);
-                          setEmailTxtColor("black");
-                          setStatus("");
-                        }}
-                      />
-                      <Form.Text>
-                        We'll never share your email with anyone else.
-                      </Form.Text>
-                    </Form.Group>
+                      <Form.Group className="mb-4" controlId="formEmail">
+                        <Form.Control
+                          style={emailStyles}
+                          required
+                          type="email"
+                          placeholder="Email"
+                          value={email}
+                          onChange={(e) => {
+                            setEmail(e.currentTarget.value);
+                            setEmailTxtColor("black");
+                            setStatus("");
+                          }}
+                        />
+                        <Form.Text>
+                          We'll never share your email with anyone else.
+                        </Form.Text>
+                      </Form.Group>
 
-                    <Form.Group className="mb-4" controlId="formPassword">
-                      <Form.Control
-                        required
-                        type="password"
-                        placeholder="Password"
-                        value={password}
-                        onChange={(e) => {
-                          setPassword(e.currentTarget.value);
-                          setPassTxtColor("gray");
-                          setStatus("");
-                        }}
-                      />
-                      <Form.Text style={passStyles}>
-                        Must be at least 8 characters long
-                      </Form.Text>
-                    </Form.Group>
+                      <Form.Group className="mb-4" controlId="formPassword">
+                        <Form.Control
+                          required
+                          type="password"
+                          placeholder="Password"
+                          value={password}
+                          onChange={(e) => {
+                            setPassword(e.currentTarget.value);
+                            setPassTxtColor("gray");
+                            setStatus("");
+                          }}
+                        />
+                        <Form.Text style={passStyles}>
+                          Must be at least 8 characters long
+                        </Form.Text>
+                      </Form.Group>
 
-                    <SubmitBtn
-                      name="Create Account"
-                      handleClick={handleCreate}
+                      <SubmitBtn
+                        name="Create Account"
+                        handleClick={handleCreate}
+                      />
+                    </Form>
+                    <GoogleAuth
+                      createUser={createUser}
+                      setShow={setShow}
+                      setStatus={setStatus}
+                      setUserEmail={setUserEmail}
+                      setUserCreated={setUserCreated}
                     />
-                  </Form>
-                  <GoogleAuth
-                    createUser={createUser}
-                    setShow={setShow}
-                    setStatus={setStatus}
-                  />
-                </Card.Body>
-              </>
+                  </Card.Body>
+                </>
+              ) : (
+                <>
+                  <Card.Body className="form">
+                    <h5 style={{ textAlign: "center", fontSize: "1.5em" }}>
+                      Success
+                    </h5>
+                  </Card.Body>
+                </>
+              )
             ) : (
-              <>
-                <Card.Body className="form">
-                  <h5 style={{ textAlign: "center", fontSize: "1.5em" }}>
-                    Success
-                  </h5>
-                </Card.Body>
-              </>
+              <LoginStep />
             )
           }
         />
