@@ -11,7 +11,7 @@ import { useMutation } from "@apollo/client";
 import { CREATE_USER } from "../mutations/userMutations";
 import { axiosLogin } from "../helper/axiosHelper";
 
-export default function GoogleAuth({ setShow, setStatus }) {
+export default function GoogleAuth({ createUser, setShow, setStatus }) {
   const [userEmail, setUserEmail] = useState("");
   const ctx = useContext(UserContext);
   const navigate = useNavigate();
@@ -34,20 +34,20 @@ export default function GoogleAuth({ setShow, setStatus }) {
   //   setStatus("Google Sign In Error");
   // }
 
-  const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
-  // if (loading) return;
-  if (error) {
-    console.error("createUser Error", error);
-    return false;
-  }
-  if (data && data.createUser) {
-    console.log("DATA PRESENT!!", data);
-    const newUser = data.createUser;
-    console.log("axios /login call");
-    axiosLogin(newUser, ctx.user, navigate);
-  } else {
-    console.log("NO DATA");
-  }
+  // const [createUser, { data, loading, error }] = useMutation(CREATE_USER);
+  // // if (loading) return;
+  // if (error) {
+  //   console.error("createUser Error", error);
+  //   return false;
+  // }
+  // if (data && data.createUser) {
+  //   console.log("DATA PRESENT!!", data);
+  //   const newUser = data.createUser;
+  //   console.log("axios /login call");
+  //   axiosLogin(newUser, ctx.user, navigate);
+  // } else {
+  //   console.log("NO DATA");
+  // }
 
   function handleGoogleAuth() {
     signInWithPopup(auth, provider)
