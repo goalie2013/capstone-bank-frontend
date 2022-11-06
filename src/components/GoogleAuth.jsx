@@ -95,6 +95,8 @@ export default function GoogleAuth({ setShow, setStatus }) {
   return (
     <>
       {userCreated ? (
+        <LoginStep email={userEmail} />
+      ) : (
         <Form onSubmit={(e) => e.preventDefault()}>
           <div style={{ display: "flex", justifyContent: "center" }}>
             <Button
@@ -127,8 +129,6 @@ export default function GoogleAuth({ setShow, setStatus }) {
             </Button>
           </div>
         </Form>
-      ) : (
-        <LoginStep email={userEmail} />
       )}
     </>
   );
