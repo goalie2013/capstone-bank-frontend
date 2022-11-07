@@ -17,12 +17,11 @@ export default function NavBar() {
   const ctx = useContext(UserContext);
   const firebaseAuth = getAuth(app);
   const [expanded, setExpanded] = useState(false);
-  const [loggedIn, setLoggedIn] = useState(
-    firebaseAuth.currentUser ? true : false
-  );
-  const [btnTxt, setBtnTxt] = useState(
-    firebaseAuth.currentUser ? "Logout" : "Log In"
-  );
+  // const [loggedIn, setLoggedIn] = useState(
+  //   firebaseAuth.currentUser ? true : false
+  // );
+  const [loggedIn, setLoggedIn] = useState("none");
+
   const [email, setEmail] = useState("");
   let id;
 
@@ -43,12 +42,10 @@ export default function NavBar() {
         if (!email) setEmail(userCredential.email);
 
         setLoggedIn(true);
-        setBtnTxt("Logout");
       } else {
         console.log("NAVBAR No User Credential");
         id = "";
         setLoggedIn(false);
-        setBtnTxt("Log In");
       }
     });
     // if (firebaseAuth.currentUser !== null) setLoggedIn(true);
@@ -91,7 +88,6 @@ export default function NavBar() {
     firebaseAuth.signOut();
     console.log("currentUser after", firebaseAuth.currentUser);
     // setLoggedIn(false);
-    // setBtnTxt("Log In");
     ctx.user = {};
     localStorage.removeItem("token");
     localStorage.removeItem("refresh token");
@@ -144,7 +140,9 @@ export default function NavBar() {
             id="basic-navbar-nav"
             className="justify-content-end"
           >
-            {loggedIn ? (
+            {loggedIn === "none" ? (
+              <></>
+            ) : loggedIn ? (
               <NavBarLoggedIn
                 id={id}
                 style={style}
