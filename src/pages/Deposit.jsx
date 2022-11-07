@@ -56,9 +56,10 @@ export default function Deposit({ userId, userEmail }) {
 
         setShowSubmit(false);
         setDepositValue("");
+        setTimestamp("");
       });
     }
-  }, [showDownload]);
+  }, []);
 
   if (userId !== paramId) return <NotAuthorized id={userId} />;
 
@@ -121,6 +122,7 @@ export default function Deposit({ userId, userEmail }) {
     } else {
       setShowSubmit(false);
       setDepositValue("");
+      setTimestamp("");
     }
   }
 

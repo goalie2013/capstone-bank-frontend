@@ -46,11 +46,12 @@ export default function Withdraw({ token, userId, userEmail }) {
         console.log("uri", uri);
         downloadScreenshot("Withdraw", timestamp, uri);
 
-        // setShowSubmit(false);
-        // setWithdrawValue("");
+        setShowSubmit(false);
+        setWithdrawValue("");
+        setTimestamp("");
       });
     }
-  }, [showDownload]);
+  }, []);
 
   // Update User Mutation
   const updateUser = MutationUpdateUser(userId, userEmail);
@@ -120,10 +121,11 @@ export default function Withdraw({ token, userId, userEmail }) {
     if (switchState) {
       console.log("take screenshot");
       setDownload(true);
+    } else {
+      setShowSubmit(false);
+      setWithdrawValue("");
+      setTimestamp("");
     }
-
-    setShowSubmit(false);
-    setWithdrawValue("");
   }
 
   return (
