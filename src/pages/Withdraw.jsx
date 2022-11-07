@@ -51,7 +51,7 @@ export default function Withdraw({ token, userId, userEmail }) {
         setTimestamp("");
       });
     }
-  }, []);
+  }, [timestamp]);
 
   // Update User Mutation
   const updateUser = MutationUpdateUser(userId, userEmail);
@@ -170,6 +170,7 @@ export default function Withdraw({ token, userId, userEmail }) {
               // onSubmit={(e) =>
               //   handleKeyPress(e, handleWithdraw, setTextColor, setStatus)
               // }
+              onSubmit={(e) => e.preventDefault()}
             >
               <Form.Group className="mb-2" controlId="formWithdraw">
                 <Form.Label style={{ fontSize: "1.5rem" }}>
