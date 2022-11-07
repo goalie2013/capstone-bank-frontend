@@ -67,6 +67,8 @@ export default function GoogleAuth({ setShow, setStatus, mode }) {
         setUserEmail(email);
 
         // Create User into Database
+        //TODO:If user.metadata.lastLoginAt - user.metadata.createdAt > 1000 -->
+        // DONT CREATE USER IN DB
         try {
           console.log("createUser()");
           createUser({ variables: { user: { name, email } } });

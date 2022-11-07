@@ -47,6 +47,7 @@ export default function Deposit({ userId, userEmail }) {
   console.log("PARAM ID", paramId);
 
   useEffect(() => {
+    console.count("Deposit useEffect");
     // Download Screenshot
     if (showDownload && timestamp) {
       html2canvas(document.body).then((canvas) => {
