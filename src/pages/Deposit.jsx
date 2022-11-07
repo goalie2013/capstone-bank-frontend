@@ -60,7 +60,7 @@ export default function Deposit({ userId, userEmail }) {
         setTimestamp("");
       });
     }
-  }, []);
+  }, [timestamp]);
 
   if (userId !== paramId) return <NotAuthorized id={userId} />;
 
@@ -129,7 +129,6 @@ export default function Deposit({ userId, userEmail }) {
 
   return (
     <>
-      {/* <NavBar id={userId} /> */}
       <div className="page-wrapper">
         <Form
           style={{
