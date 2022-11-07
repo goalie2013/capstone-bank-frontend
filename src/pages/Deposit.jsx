@@ -50,7 +50,6 @@ export default function Deposit({ userId, userEmail }) {
     // Download Screenshot
     if (showDownload && timestamp) {
       html2canvas(document.body).then((canvas) => {
-        document.body.appendChild(canvas);
         uri = canvas.toDataURL();
         console.log("uri", uri);
         downloadScreenshot("Deposit", timestamp, uri);

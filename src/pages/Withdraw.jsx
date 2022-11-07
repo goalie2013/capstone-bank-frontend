@@ -42,7 +42,6 @@ export default function Withdraw({ token, userId, userEmail }) {
     // Download Screenshot
     if (showDownload && timestamp) {
       html2canvas(document.body).then((canvas) => {
-        document.body.appendChild(canvas);
         uri = canvas.toDataURL();
         console.log("uri", uri);
         downloadScreenshot("Withdraw", timestamp, uri);
