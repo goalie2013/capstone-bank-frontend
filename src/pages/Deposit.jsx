@@ -55,8 +55,8 @@ export default function Deposit({ userId, userEmail }) {
         console.log("uri", uri);
         downloadScreenshot("Deposit", timestamp, uri);
 
-        // setShowSubmit(false);
-        // setDepositValue("");
+        setShowSubmit(false);
+        setDepositValue("");
       });
     }
   }, [showDownload]);
@@ -119,10 +119,10 @@ export default function Deposit({ userId, userEmail }) {
     if (switchState) {
       console.log("take screenshot");
       setDownload(true);
+    } else {
+      setShowSubmit(false);
+      setDepositValue("");
     }
-
-    setShowSubmit(false);
-    setDepositValue("");
   }
 
   return (

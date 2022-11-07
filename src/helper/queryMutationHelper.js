@@ -91,13 +91,15 @@ export function MutationUpdateUser(id, email) {
   const [updateUser] = useMutation(UPDATE_USER, {
     refetchQueries: [
       {
-        // query: GET_USER,
-        // variables: { id },
-        query: GET_USER_BY_EMAIL,
-        variables: { email },
+        query: GET_USER,
       },
+      "getUser",
+      // variables: { id },
+      // query: GET_USER_BY_EMAIL,
+      // variables: { email },
+      // },
     ],
-    // update(cache, { data }) {
+    // update(cache, { data: {updateUser} }) {
     //   const { getUserByEmail } = cache.readQuery({
     //     query: GET_USER_BY_EMAIL,
     //   });
@@ -105,7 +107,7 @@ export function MutationUpdateUser(id, email) {
     //     query: GET_USER_BY_EMAIL,
     //     data: {
     //       getUserByEmail: {
-    //         ...getUserByEmail,
+    //         ...data,
     //         email,
     //       },
     //     },
